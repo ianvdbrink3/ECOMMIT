@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  email     String    @unique
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  products               Product[]
+  campaigns              Campaign[]
+  killDecisions          KillDecision[]
+  scalingRecommendations ScalingRecommendation[]
+  cashForecasts          CashForecast[]
+}
+
+model Product {
+  id             String    @id @default(cuid())
+  userId         String
+  name           String
+  salePrice      Float
+  productCost    Float
+  shippingCost   Float
+  vatPercentage  Float
+  paymentFeePerc Float
+  refundPerc     Float
+  chargebackPerc Float
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaigns Campaign[]
+
+  @@index([userId])
+}
+
+model Campaign {
+  id         String         @id @default(cuid())
+  userId     String
+  productId  String
+  name       String
+  testBudget Float
+  creatives  Int
+  hooks      Int
+  angles     Int
+  status     CampaignStatus @default(ACTIVE)
+  startDate  DateTime       @default(now())
+  endDate    DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  deletedAt  DateTime?
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  adSets  AdSet[]
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model AdSet {
+  id          String      @id @default(cuid())
+  campaignId  String
+  name        String
+  dailyBudget Float
+  spend       Float       @default(0)
+  impressions Int         @default(0)
+  clicks      Int         @default(0)
+  atc         Int         @default(0)
+  checkouts   Int         @default(0)
+  purchases   Int         @default(0)
+  revenue     Float       @default(0)
+  status      AdSetStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+
+  campaign       Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  creativeItems  Creative[]
+
+  @@index([campaignId])
+}
+
+model Creative {
+  id          String         @id @default(cuid())
+  adSetId     String
+  name        String
+  hook        String
+  angle       String
+  impressions Int            @default(0)
+  clicks      Int            @default(0)
+  spend       Float          @default(0)
+  status      CreativeStatus @default(ACTIVE)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
+
+  adSet AdSet @relation(fields: [adSetId], references: [id], onDelete: Cascade)
+
+  @@index([adSetId])
+}
+
+model KillDecision {
+  id             String         @id @default(cuid())
+  userId         String
+  entityType     KillEntityType
+  entityId       String
+  entityName     String
+  rule           String
+  reason         String
+  severity       Severity
+  recommendation String
+  createdAt      DateTime       @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entityId])
+}
+
+model ScalingRecommendation {
+  id          String   @id @default(cuid())
+  userId      String
+  campaignId  String
+  verdict     Verdict
+  confidence  Float
+  explanation String
+  scalingPlan Json
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CashForecast {
+  id              String   @id @default(cuid())
+  userId          String
+  remainingBudget Float
+  dailySpend      Float
+  averageCpa      Float
+  roas            Float
+  runway          Float
+  depletionDate   DateTime
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  KILLED
+  COMPLETED
+}
+
+enum AdSetStatus {
+  ACTIVE
+  PAUSED
+  KILLED
+}
+
+enum CreativeStatus {
+  ACTIVE
+  PAUSED
+  KILLED
+}
+
+enum KillEntityType {
+  CREATIVE
+  ADSET
+  CAMPAIGN
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Verdict {
+  KILL
+  OBSERVE
+  SCALE
+}
