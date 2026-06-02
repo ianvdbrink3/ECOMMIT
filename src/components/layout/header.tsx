@@ -1,118 +1,158 @@
 'use client'
 
-import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import {
+  Menu, X, LayoutDashboard, Calculator, PieChart, Layers,
+  Filter, Skull, Trophy, TrendingUp, DollarSign, Settings,
+} from 'lucide-react'
 import Link from 'next/link'
 import { UserButton } from '@clerk/nextjs'
-import { Menu, X, LayoutDashboard, Calculator, PieChart, Layers, Filter, Skull, Trophy, TrendingUp, DollarSign, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const pageMeta: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/economics': 'Product Economics',
-  '/budget-planner': 'Budget Planner',
-  '/creative-analysis': 'Creative Analyse',
-  '/funnel-analysis': 'Funnel Analyse',
-  '/kill-engine': 'Kill Engine',
-  '/winner-detection': 'Winner Detectie',
-  '/scaling-center': 'Scaling Center',
-  '/cash-forecast': 'Cash Forecast',
-  '/settings': 'Instellingen',
+const pageMeta: Record<string, { title: string; subtitle: string }> = {
+  '/dashboard':         { title: 'Dashboard',          subtitle: 'Overzicht'                  },
+  '/economics':         { title: 'Product Economics',  subtitle: 'Marge & break-even CPA'     },
+  '/budget-planner':    { title: 'Budget Planner',     subtitle: 'Testbudget verdelen'         },
+  '/creative-analysis': { title: 'Creative Analyse',   subtitle: 'CTR, CPC en CPM'            },
+  '/funnel-analysis':   { title: 'Funnel Analyse',     subtitle: 'Conversieproblemen opsporen' },
+  '/kill-engine':       { title: 'Kill Engine',        subtitle: 'Onderpresteerders stoppen'   },
+  '/winner-detection':  { title: 'Winner Detectie',    subtitle: 'Winnaars identificeren'      },
+  '/scaling-center':    { title: 'Scaling Center',     subtitle: '10-daagse schaalroadmap'     },
+  '/cash-forecast':     { title: 'Cash Forecast',      subtitle: 'Budget runway & depletie'    },
+  '/settings':          { title: 'Instellingen',       subtitle: 'Account en voorkeuren'       },
 }
 
-const allNav = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', section: 'Overzicht' },
-  { href: '/economics', icon: Calculator, label: 'Economics', section: 'Analyse' },
-  { href: '/budget-planner', icon: PieChart, label: 'Budget Planner', section: 'Analyse' },
-  { href: '/creative-analysis', icon: Layers, label: 'Creative Analyse', section: 'Analyse' },
-  { href: '/funnel-analysis', icon: Filter, label: 'Funnel Analyse', section: 'Analyse' },
-  { href: '/kill-engine', icon: Skull, label: 'Kill Engine', section: 'Actie' },
-  { href: '/winner-detection', icon: Trophy, label: 'Winner Detectie', section: 'Actie' },
-  { href: '/scaling-center', icon: TrendingUp, label: 'Scaling Center', section: 'Actie' },
-  { href: '/cash-forecast', icon: DollarSign, label: 'Cash Forecast', section: 'Actie' },
-  { href: '/settings', icon: Settings, label: 'Instellingen', section: 'Overig' },
+const drawerSections = [
+  {
+    label: 'Overzicht',
+    items: [{ href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' }],
+  },
+  {
+    label: 'Analyse',
+    items: [
+      { href: '/economics',         icon: Calculator, label: 'Economics'        },
+      { href: '/budget-planner',    icon: PieChart,   label: 'Budget Planner'   },
+      { href: '/creative-analysis', icon: Layers,     label: 'Creative Analyse' },
+      { href: '/funnel-analysis',   icon: Filter,     label: 'Funnel Analyse'   },
+    ],
+  },
+  {
+    label: 'Actie',
+    items: [
+      { href: '/kill-engine',      icon: Skull,      label: 'Kill Engine'     },
+      { href: '/winner-detection', icon: Trophy,     label: 'Winner Detectie' },
+      { href: '/scaling-center',   icon: TrendingUp, label: 'Scaling Center'  },
+      { href: '/cash-forecast',    icon: DollarSign, label: 'Cash Forecast'   },
+    ],
+  },
+  {
+    label: 'Overig',
+    items: [{ href: '/settings', icon: Settings, label: 'Instellingen' }],
+  },
 ]
 
 export function Header() {
   const pathname = usePathname()
+  const meta = pageMeta[pathname] ?? { title: 'TVB Allocator', subtitle: '' }
   const [open, setOpen] = useState(false)
-  const title = pageMeta[pathname] ?? 'TVB Allocator'
-
-  const sections = [...new Set(allNav.map(n => n.section))]
 
   return (
     <>
-      <header className="flex items-center h-[var(--header-h)] px-4 md:px-5 border-b border-[var(--border)] bg-[var(--surface)] shrink-0 gap-3">
+      <header className="flex items-center h-[var(--header-h)] px-5 md:px-6 border-b border-[var(--border)] bg-[var(--surface)] shrink-0 gap-4">
         <button
+          className="md:hidden w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-white/[0.04] transition-all duration-150"
           onClick={() => setOpen(true)}
-          className="md:hidden flex items-center justify-center w-8 h-8 rounded-[var(--radius-sm)] text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-white/[0.05] transition-colors"
         >
           <Menu size={17} />
         </button>
 
-        {/* Mobile logo */}
-        <div className="md:hidden shrink-0 w-6 h-6 rounded-md bg-[var(--accent)] flex items-center justify-center">
-          <span className="text-white font-bold text-[9px]">TVB</span>
+        <div className="md:hidden w-6 h-6 rounded-[6px] bg-[var(--accent)] flex items-center justify-center shrink-0">
+          <span className="text-white font-bold text-[8px]">TVB</span>
         </div>
 
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 min-w-0 flex-1 text-[13px]">
-          <span className="hidden md:block text-[var(--text-3)]">TVB Allocator</span>
-          <span className="hidden md:block text-[var(--border-strong)] select-none">/</span>
-          <span className="font-medium text-[var(--text-1)] truncate">{title}</span>
+        <div className="flex items-baseline gap-2.5 min-w-0 flex-1">
+          <h1 className="text-[14px] font-semibold text-[var(--text-1)] tracking-[-0.02em] leading-none truncate">
+            {meta.title}
+          </h1>
+          {meta.subtitle && (
+            <span className="hidden sm:block text-[13px] text-[var(--text-3)] leading-none truncate">
+              {meta.subtitle}
+            </span>
+          )}
         </div>
 
-        <div className="shrink-0">
-          <UserButton appearance={{ elements: { avatarBox: 'w-[26px] h-[26px]' } }} />
-        </div>
+        <UserButton appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
       </header>
 
-      {/* Mobile drawer */}
       {open && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-60 bg-[var(--surface)] border-r border-[var(--border)] flex flex-col">
-            <div className="flex items-center justify-between px-4 h-[var(--header-h)] border-b border-[var(--border)]">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute left-0 top-0 h-full w-[276px] bg-[var(--surface)] flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-5 h-[var(--header-h)] border-b border-[var(--border)]">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-[8px] bg-[var(--accent)] flex items-center justify-center">
                   <span className="text-white font-bold text-[10px]">TVB</span>
                 </div>
-                <span className="text-[13px] font-semibold text-[var(--text-1)]">TVB Allocator</span>
+                <span className="text-[14px] font-semibold text-[var(--text-1)] tracking-[-0.03em]">
+                  TVB Allocator
+                </span>
               </div>
-              <button onClick={() => setOpen(false)} className="p-1 text-[var(--text-3)] hover:text-[var(--text-1)] transition-colors">
-                <X size={16} />
+              <button
+                onClick={() => setOpen(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-white/[0.04] transition-all duration-150"
+              >
+                <X size={15} />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto px-2 py-3">
-              {sections.map(section => {
-                const items = allNav.filter(n => n.section === section)
-                return (
-                  <div key={section} className="mb-4">
-                    <p className="px-2.5 mb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--text-3)]">
-                      {section}
-                    </p>
-                    {items.map(({ href, icon: Icon, label }) => {
-                      const active = pathname === href
+
+            <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-5">
+              {drawerSections.map(section => (
+                <div key={section.label}>
+                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-3)]">
+                    {section.label}
+                  </p>
+                  <div className="space-y-[2px]">
+                    {section.items.map(({ href, icon: Icon, label }) => {
+                      const active = pathname === href || pathname.startsWith(href + '/')
                       return (
                         <Link
                           key={href}
                           href={href}
                           onClick={() => setOpen(false)}
                           className={cn(
-                            'relative flex items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-[13px] transition-colors',
-                            active ? 'bg-white/[0.06] text-[var(--text-1)] font-medium' : 'text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-white/[0.03]'
+                            'group relative flex items-center gap-3 px-3 py-[7px] rounded-[var(--radius-sm)] text-[13px] transition-all duration-150',
+                            active
+                              ? 'text-[var(--text-1)]'
+                              : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
                           )}
                         >
-                          {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-r-full bg-[var(--accent)]" />}
-                          <Icon size={15} className={active ? 'text-[var(--accent)]' : 'text-[var(--text-3)]'} />
-                          {label}
+                          {active && (
+                            <span className="absolute left-0 inset-y-[5px] w-[2.5px] rounded-r-full bg-[var(--accent)]" />
+                          )}
+                          <Icon
+                            size={15}
+                            strokeWidth={active ? 2.2 : 1.8}
+                            className={cn(
+                              'shrink-0',
+                              active ? 'text-[var(--accent)]' : 'text-[var(--text-3)] group-hover:text-[var(--text-2)]'
+                            )}
+                          />
+                          <span className={cn('leading-none', active && 'font-medium')}>{label}</span>
                         </Link>
                       )
                     })}
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </nav>
+
+            <div className="px-5 py-4 border-t border-[var(--border)]">
+              <UserButton appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
+            </div>
           </div>
         </div>
       )}

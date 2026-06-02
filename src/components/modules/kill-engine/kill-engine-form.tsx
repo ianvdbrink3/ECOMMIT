@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectItem } from '@/components/ui/select'
 import { killEngineSchema, type KillEngineFormValues } from '@/lib/validations/kill-engine'
 import { createDefaultRuleEngine } from '@/domain/kill-engine/rules'
 import type { KillEngineResult } from '@/domain/kill-engine/types'
@@ -98,18 +98,17 @@ export function KillEngineForm() {
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
           <Field label="Type entiteit">
-            <Select value={entityType} onValueChange={(v: 'CREATIVE' | 'ADSET' | 'CAMPAIGN') => {
-              setEntityType(v)
-              setValue('entityType', v)
-            }}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="CREATIVE">Creative</SelectItem>
-                <SelectItem value="ADSET">Ad Set</SelectItem>
-                <SelectItem value="CAMPAIGN">Campaign</SelectItem>
-              </SelectContent>
+            <Select
+              value={entityType}
+              onChange={(e) => {
+                const v = e.target.value as 'CREATIVE' | 'ADSET' | 'CAMPAIGN'
+                setEntityType(v)
+                setValue('entityType', v)
+              }}
+            >
+              <SelectItem value="CREATIVE">Creative</SelectItem>
+              <SelectItem value="ADSET">Ad Set</SelectItem>
+              <SelectItem value="CAMPAIGN">Campaign</SelectItem>
             </Select>
           </Field>
 

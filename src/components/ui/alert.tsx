@@ -1,59 +1,45 @@
 import * as React from 'react'
-import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
-const alertVariants = cva(
-  'relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-current',
-  {
-    variants: {
-      variant: {
-        default: 'bg-[#111111] border-[#262626] text-[#f5f5f5]',
-        destructive: 'border-red-500/50 bg-red-500/10 text-red-400 [&>svg]:text-red-400',
-        warning: 'border-amber-500/50 bg-amber-500/10 text-amber-400 [&>svg]:text-amber-400',
-        success: 'border-green-500/50 bg-green-500/10 text-green-400 [&>svg]:text-green-400',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-)
+interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'destructive' | 'warning' | 'success'
+}
 
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(alertVariants({ variant }), className)}
-    {...props}
-  />
-))
-Alert.displayName = 'Alert'
+const variants: Record<NonNullable<AlertProps['variant']>, string> = {
+  default:     'bg-[var(--surface-3)] border-[var(--border-strong)] text-[var(--text-2)]',
+  destructive: 'bg-[var(--danger-dim)]  border-[var(--danger)]/20  text-[var(--danger)]',
+  warning:     'bg-[var(--warning-dim)] border-[var(--warning)]/20 text-[var(--warning)]',
+  success:     'bg-[var(--success-dim)] border-[var(--success)]/20 text-[var(--success)]',
+}
 
-const AlertTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h5
-    ref={ref}
-    className={cn('mb-1 font-medium leading-none tracking-tight', className)}
-    {...props}
-  />
-))
-AlertTitle.displayName = 'AlertTitle'
+export function Alert({ className, variant = 'default', ...props }: AlertProps) {
+  return (
+    <div
+      role="alert"
+      className={cn(
+        'relative rounded-[var(--radius)] border px-4 py-3.5 flex gap-3 items-start',
+        variants[variant],
+        className
+      )}
+      {...props}
+    />
+  )
+}
 
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('text-sm [&_p]:leading-relaxed', className)}
-    {...props}
-  />
-))
-AlertDescription.displayName = 'AlertDescription'
+export function AlertTitle({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn('text-[13.5px] font-semibold leading-none tracking-[-0.01em]', className)}
+      {...props}
+    />
+  )
+}
 
-export { Alert, AlertTitle, AlertDescription }
+export function AlertDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <div
+      className={cn('mt-1 text-[12.5px] opacity-80 leading-relaxed', className)}
+      {...props}
+    />
+  )
+}
