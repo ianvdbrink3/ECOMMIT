@@ -23,10 +23,10 @@ const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/economics', icon: Calculator, label: 'Economics' },
   { href: '/budget-planner', icon: PieChart, label: 'Budget Planner' },
-  { href: '/creative-analysis', icon: Layers, label: 'Creative Analysis' },
-  { href: '/funnel-analysis', icon: Filter, label: 'Funnel Analysis' },
+  { href: '/creative-analysis', icon: Layers, label: 'Creative Analyse' },
+  { href: '/funnel-analysis', icon: Filter, label: 'Funnel Analyse' },
   { href: '/kill-engine', icon: Skull, label: 'Kill Engine' },
-  { href: '/winner-detection', icon: Trophy, label: 'Winner Detection' },
+  { href: '/winner-detection', icon: Trophy, label: 'Winner Detectie' },
   { href: '/scaling-center', icon: TrendingUp, label: 'Scaling Center' },
   { href: '/cash-forecast', icon: DollarSign, label: 'Cash Forecast' },
 ]
@@ -78,7 +78,7 @@ export function Sidebar() {
         <NavItem
           href="/settings"
           icon={Settings}
-          label="Settings"
+          label="Instellingen"
           collapsed={collapsed}
         />
 
@@ -101,7 +101,7 @@ export function Sidebar() {
             <button
               onClick={() => setCollapsed(true)}
               className="ml-auto text-[#444444] hover:text-[#888888] transition-colors"
-              title="Collapse sidebar"
+              title="Sidebar inklappen"
             >
               <ChevronLeft size={15} />
             </button>
@@ -112,7 +112,7 @@ export function Sidebar() {
           <button
             onClick={() => setCollapsed(false)}
             className="w-10 mx-auto flex items-center justify-center py-1.5 text-[#444444] hover:text-[#888888] transition-colors"
-            title="Expand sidebar"
+            title="Sidebar uitklappen"
           >
             <ChevronRight size={15} />
           </button>

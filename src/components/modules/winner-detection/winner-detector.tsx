@@ -82,9 +82,9 @@ export function WinnerDetector() {
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Winner Detection</CardTitle>
+          <CardTitle>Winner Detectie</CardTitle>
           <CardDescription>
-            Analyze campaign metrics to identify winners ready to scale
+            Analyseer campagnemetrics om winnaars klaar voor schalen te identificeren
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -128,7 +128,7 @@ export function WinnerDetector() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="breakEvenCpa">Break-Even CPA (€)</Label>
+                <Label htmlFor="breakEvenCpa">Break-even CPA (€)</Label>
                 <Input
                   id="breakEvenCpa"
                   type="number"
@@ -171,7 +171,7 @@ export function WinnerDetector() {
 
           {/* Scoring Criteria */}
           <div className="mt-6 space-y-2">
-            <p className="text-xs text-[#525252] uppercase tracking-wider">Scoring Criteria</p>
+            <p className="text-xs text-[#525252] uppercase tracking-wider">Scoringscriteria</p>
             {[
               { factor: 'ROAS ≥ 3x', points: '+40 pts', color: 'text-green-400' },
               { factor: 'CPA ≤ Break-Even × 0.7', points: '+30 pts', color: 'text-green-400' },
@@ -198,7 +198,7 @@ export function WinnerDetector() {
                 <div className="flex items-center gap-3">
                   <Icon className={cn('w-8 h-8', config.color)} />
                   <div>
-                    <p className="text-xs text-[#737373] uppercase tracking-wider">Verdict</p>
+                    <p className="text-xs text-[#737373] uppercase tracking-wider">Oordeel</p>
                     <p className={cn('text-3xl font-bold', config.color)}>{config.label}</p>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export function WinnerDetector() {
           {/* Confidence Score */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Confidence Score</CardTitle>
+              <CardTitle className="text-sm">Betrouwbaarheidsscore</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
@@ -231,10 +231,10 @@ export function WinnerDetector() {
                   <p className="text-4xl font-bold text-blue-400">{result.confidence}%</p>
                   <p className="text-xs text-[#737373] mt-1">
                     {result.confidence >= 70
-                      ? 'High confidence'
+                      ? 'Hoge zekerheid'
                       : result.confidence >= 50
-                        ? 'Medium confidence'
-                        : 'Low confidence'}
+                        ? 'Gemiddelde zekerheid'
+                        : 'Lage zekerheid'}
                   </p>
                   <Progress value={result.confidence} className="mt-2 w-32" />
                 </div>

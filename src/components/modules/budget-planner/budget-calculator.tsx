@@ -76,7 +76,7 @@ export function BudgetCalculator() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="testBudget">Total Test Budget (€)</Label>
+              <Label htmlFor="testBudget">Totaal testbudget (€)</Label>
               <Input
                 id="testBudget"
                 type="number"
@@ -136,7 +136,7 @@ export function BudgetCalculator() {
             {totalAdsPreview > 0 && (
               <div className="bg-blue-600/10 border border-blue-500/20 rounded-lg p-3">
                 <p className="text-xs text-blue-400">
-                  Total Ads to Test: <span className="font-bold text-sm">{totalAdsPreview}</span>
+                  Totaal te testen advertenties: <span className="font-bold text-sm">{totalAdsPreview}</span>
                 </p>
               </div>
             )}
@@ -154,10 +154,10 @@ export function BudgetCalculator() {
           {/* Key Stats */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Total Ads', value: formatNumber(result.totalAds) },
-              { label: 'Campaigns', value: formatNumber(result.recommendedCampaigns) },
-              { label: 'Ad Sets', value: formatNumber(result.recommendedAdSets) },
-              { label: 'Test Duration', value: `${result.maxTestDuration} days` },
+              { label: 'Totaal ads', value: formatNumber(result.totalAds) },
+              { label: 'Campagnes', value: formatNumber(result.recommendedCampaigns) },
+              { label: 'Ad sets', value: formatNumber(result.recommendedAdSets) },
+              { label: 'Testduur', value: `${result.maxTestDuration} dagen` },
             ].map(({ label, value }) => (
               <Card key={label}>
                 <CardContent className="p-4">
@@ -171,14 +171,14 @@ export function BudgetCalculator() {
           {/* Budget breakdown */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Budget Distribution</CardTitle>
+              <CardTitle className="text-sm">Budgetverdeling</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {[
-                { label: 'Total Test Budget', value: formatCurrency(result.budgetRunway) },
-                { label: 'Daily Budget (7-day plan)', value: formatCurrency(result.recommendedDailyBudget) },
-                { label: 'Budget per Ad Set', value: formatCurrency(result.budgetPerAdSet) },
-                { label: 'Budget per Ad', value: formatCurrency(result.budgetPerAd) },
+                { label: 'Totaal testbudget', value: formatCurrency(result.budgetRunway) },
+                { label: 'Dagbudget (7-daags plan)', value: formatCurrency(result.recommendedDailyBudget) },
+                { label: 'Budget per ad set', value: formatCurrency(result.budgetPerAdSet) },
+                { label: 'Budget per advertentie', value: formatCurrency(result.budgetPerAd) },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between">
                   <span className="text-sm text-[#a3a3a3]">{label}</span>
@@ -191,7 +191,7 @@ export function BudgetCalculator() {
           {/* Chart */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Budget per Entity</CardTitle>
+              <CardTitle className="text-sm">Budget per entiteit</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={180}>
@@ -227,16 +227,16 @@ export function BudgetCalculator() {
           {/* Strategy Tips */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Strategy Recommendations</CardTitle>
+              <CardTitle className="text-sm">Strategie-aanbevelingen</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-xs text-[#a3a3a3]">
-                With {result.totalAds} total ads across {result.recommendedCampaigns} campaign(s),
-                allocate {formatCurrency(result.budgetPerAdSet)} per ad set over 7 days.
+                Met {result.totalAds} advertenties verdeeld over {result.recommendedCampaigns} campagne(s),
+                wijs {formatCurrency(result.budgetPerAdSet)} toe per ad set over 7 dagen.
               </p>
               <p className="text-xs text-[#a3a3a3]">
-                After the test period, kill underperformers and double down on the top{' '}
-                {Math.max(1, Math.ceil(result.totalAds * 0.2))} ads by ROAS and CPA.
+                Stop na de testperiode de onderpresteerders en verdubbel op de top{' '}
+                {Math.max(1, Math.ceil(result.totalAds * 0.2))} advertenties op ROAS en CPA.
               </p>
             </CardContent>
           </Card>

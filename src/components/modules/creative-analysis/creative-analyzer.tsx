@@ -66,9 +66,9 @@ export function CreativeAnalyzer() {
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Creative Analyzer</CardTitle>
+          <CardTitle>Creative Analyse</CardTitle>
           <CardDescription>
-            Analyze creative performance by CTR, CPC, and CPM metrics
+            Beoordeel creative performance op CTR, CPC en CPM
           </CardDescription>
         </CardHeader>
         <CardContent>

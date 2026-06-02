@@ -299,7 +299,7 @@ export function CashForecastForm() {
         <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
           <div className="text-center">
             <DollarSign className="w-8 h-8 text-[#525252] mx-auto mb-2" />
-            <p className="text-[#525252] text-sm">Generate a forecast to see your runway</p>
+            <p className="text-[13px] text-[#444444]">Vul het formulier in om je runway te zien</p>
           </div>
         </div>
       )}

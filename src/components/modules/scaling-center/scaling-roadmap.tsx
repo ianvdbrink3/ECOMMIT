@@ -78,7 +78,7 @@ export function ScalingRoadmap() {
         <CardHeader>
           <CardTitle>Scaling Center</CardTitle>
           <CardDescription>
-            Generate a step-by-step scaling roadmap for your winning campaign
+            Stap-voor-stap schaalroadmap voor je winnende campagne
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -183,7 +183,7 @@ export function ScalingRoadmap() {
                       borderRadius: '8px',
                       color: '#f5f5f5',
                     }}
-                    formatter={(v) => [formatCurrency(v as number), 'Daily Budget']}
+                    formatter={(v) => [formatCurrency(v as number), 'Dagbudget']}
                   />
                   <Line
                     type="monotone"
@@ -247,7 +247,7 @@ export function ScalingRoadmap() {
         <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
           <div className="text-center">
             <TrendingUp className="w-8 h-8 text-[#525252] mx-auto mb-2" />
-            <p className="text-[#525252] text-sm">Generate a scaling roadmap to get started</p>
+            <p className="text-[13px] text-[#444444]">Vul het formulier in om een roadmap te genereren</p>
           </div>
         </div>
       )}

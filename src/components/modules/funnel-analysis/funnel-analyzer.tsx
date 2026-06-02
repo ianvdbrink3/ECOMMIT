@@ -31,19 +31,19 @@ const diagnosisConfig = {
   PRODUCT_PAGE_ISSUE: {
     icon: AlertTriangle,
     variant: 'warning' as const,
-    title: 'Product Page Issue Detected',
+    title: 'Productpagina-probleem gedetecteerd',
     color: '#f59e0b',
   },
   PRICING_ISSUE: {
     icon: AlertTriangle,
     variant: 'warning' as const,
-    title: 'Pricing Issue Detected',
+    title: 'Prijsprobleem gedetecteerd',
     color: '#f59e0b',
   },
   TRUST_ISSUE: {
     icon: Info,
     variant: 'warning' as const,
-    title: 'Trust Issue Detected',
+    title: 'Vertrouwensprobleem gedetecteerd',
     color: '#3b82f6',
   },
 }
