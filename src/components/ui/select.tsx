@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -14,12 +12,12 @@ export function Select({ className, children, placeholder, ...props }: SelectPro
       <select
         className={cn(
           'flex w-full h-9 pl-3 pr-8 rounded-[var(--radius-sm)]',
-          'bg-[var(--surface-3)] border border-[var(--border)]',
+          'bg-[var(--surface)] border border-[var(--border-strong)]',
           'text-[13.5px] text-[var(--text-1)]',
-          'appearance-none cursor-pointer',
+          'appearance-none cursor-pointer shadow-sm',
           'transition-all duration-150',
-          'hover:border-[var(--border-strong)]',
-          'focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/25',
+          'hover:border-[rgba(0,0,0,0.2)]',
+          'focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15',
           'disabled:opacity-40 disabled:cursor-not-allowed',
           className
         )}
@@ -40,12 +38,6 @@ export function Select({ className, children, placeholder, ...props }: SelectPro
   )
 }
 
-export function SelectItem({
-  value,
-  children,
-}: {
-  value: string
-  children: React.ReactNode
-}) {
+export function SelectItem({ value, children }: { value: string; children: React.ReactNode }) {
   return <option value={value}>{children}</option>
 }

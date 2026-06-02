@@ -1,43 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  /* ── Backgrounds ── */
-  --bg:        #050508;
-  --surface:   #0b0b10;
-  --surface-2: #111118;
-  --surface-3: #18181f;
-  --surface-4: #202028;
+  /* ── Page backgrounds ─────────────────────────────────── */
+  --bg:        #f2f2f7;   /* Apple systemGroupedBackground  */
+  --surface:   #ffffff;
+  --surface-2: #fafafd;
+  --surface-3: #f0f0f5;
+  --surface-4: #e5e5ea;
 
-  /* ── Borders ── */
-  --border:        rgba(255, 255, 255, 0.055);
-  --border-strong: rgba(255, 255, 255, 0.11);
+  /* ── Borders ──────────────────────────────────────────── */
+  --border:        rgba(0, 0, 0, 0.07);
+  --border-strong: rgba(0, 0, 0, 0.13);
 
-  /* ── Text ── */
-  --text-1: #eeeef3;
-  --text-2: #8888a0;
-  --text-3: #44445a;
+  /* ── Typography ───────────────────────────────────────── */
+  --text-1: #1d1d1f;   /* Apple primary label */
+  --text-2: #6e6e73;   /* Apple secondary label */
+  --text-3: #aeaeb2;   /* Apple tertiary label */
 
-  /* ── Accent — indigo ── */
-  --accent:     #6366f1;
-  --accent-h:   #4f52e8;
-  --accent-dim: rgba(99, 102, 241, 0.10);
+  /* ── Accent — Apple blue ──────────────────────────────── */
+  --accent:     #0071e3;
+  --accent-h:   #0077ed;
+  --accent-dim: rgba(0, 113, 227, 0.08);
 
-  /* ── Semantic ── */
-  --success:     #34d399;
-  --success-dim: rgba(52, 211, 153, 0.09);
-  --warning:     #fbbf24;
-  --warning-dim: rgba(251, 191, 36, 0.09);
-  --danger:      #f87171;
-  --danger-dim:  rgba(248, 113, 113, 0.09);
+  /* ── Semantic ─────────────────────────────────────────── */
+  --success:     #34c759;
+  --success-dim: rgba(52, 199, 89, 0.09);
+  --warning:     #ff9f0a;
+  --warning-dim: rgba(255, 159, 10, 0.09);
+  --danger:      #ff3b30;
+  --danger-dim:  rgba(255, 59, 48, 0.09);
 
-  /* ── Layout ── */
-  --sidebar-w: 232px;
-  --header-h:  56px;
+  /* ── Layout ───────────────────────────────────────────── */
+  --sidebar-w: 240px;
+  --header-h:  60px;
 
-  /* ── Radius ── */
-  --radius:    12px;
-  --radius-sm: 8px;
-  --radius-xs: 5px;
+  /* ── Radius ───────────────────────────────────────────── */
+  --radius:    16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
 }
 
 *, *::before, *::after {
@@ -66,7 +66,7 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 input[type=number] { -moz-appearance: textfield; }
 
-::-webkit-scrollbar         { width: 3px; height: 3px; }
+::-webkit-scrollbar         { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track   { background: transparent; }
 ::-webkit-scrollbar-thumb   { background: var(--surface-4); border-radius: 99px; }
 

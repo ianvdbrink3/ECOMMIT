@@ -11,16 +11,16 @@ import { UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 
 const pageMeta: Record<string, { title: string; subtitle: string }> = {
-  '/dashboard':         { title: 'Dashboard',          subtitle: 'Overzicht'                  },
-  '/economics':         { title: 'Product Economics',  subtitle: 'Marge & break-even CPA'     },
-  '/budget-planner':    { title: 'Budget Planner',     subtitle: 'Testbudget verdelen'         },
-  '/creative-analysis': { title: 'Creative Analyse',   subtitle: 'CTR, CPC en CPM'            },
-  '/funnel-analysis':   { title: 'Funnel Analyse',     subtitle: 'Conversieproblemen opsporen' },
-  '/kill-engine':       { title: 'Kill Engine',        subtitle: 'Onderpresteerders stoppen'   },
-  '/winner-detection':  { title: 'Winner Detectie',    subtitle: 'Winnaars identificeren'      },
-  '/scaling-center':    { title: 'Scaling Center',     subtitle: '10-daagse schaalroadmap'     },
-  '/cash-forecast':     { title: 'Cash Forecast',      subtitle: 'Budget runway & depletie'    },
-  '/settings':          { title: 'Instellingen',       subtitle: 'Account en voorkeuren'       },
+  '/dashboard':         { title: 'Dashboard',         subtitle: 'Overzicht'                  },
+  '/economics':         { title: 'Product Economics', subtitle: 'Marge & break-even CPA'     },
+  '/budget-planner':    { title: 'Budget Planner',    subtitle: 'Testbudget verdelen'         },
+  '/creative-analysis': { title: 'Creative Analyse',  subtitle: 'CTR, CPC en CPM'            },
+  '/funnel-analysis':   { title: 'Funnel Analyse',    subtitle: 'Conversieproblemen opsporen' },
+  '/kill-engine':       { title: 'Kill Engine',       subtitle: 'Onderpresteerders stoppen'   },
+  '/winner-detection':  { title: 'Winner Detectie',   subtitle: 'Winnaars identificeren'      },
+  '/scaling-center':    { title: 'Scaling Center',    subtitle: '10-daagse schaalroadmap'     },
+  '/cash-forecast':     { title: 'Cash Forecast',     subtitle: 'Budget runway & depletie'    },
+  '/settings':          { title: 'Instellingen',      subtitle: 'Account en voorkeuren'       },
 }
 
 const drawerSections = [
@@ -61,14 +61,14 @@ export function Header() {
     <>
       <header className="flex items-center h-[var(--header-h)] px-5 md:px-6 border-b border-[var(--border)] bg-[var(--surface)] shrink-0 gap-4">
         <button
-          className="md:hidden w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-white/[0.04] transition-all duration-150"
+          className="md:hidden w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-2)] hover:bg-black/[0.04] transition-all duration-150"
           onClick={() => setOpen(true)}
         >
           <Menu size={17} />
         </button>
 
-        <div className="md:hidden w-6 h-6 rounded-[6px] bg-[var(--accent)] flex items-center justify-center shrink-0">
-          <span className="text-white font-bold text-[8px]">TVB</span>
+        <div className="md:hidden w-6 h-6 rounded-[6px] bg-[var(--accent)] flex items-center justify-center shrink-0 shadow-sm">
+          <span className="text-white font-semibold text-[8px]">TVB</span>
         </div>
 
         <div className="flex items-baseline gap-2.5 min-w-0 flex-1">
@@ -88,31 +88,31 @@ export function Header() {
       {open && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-[276px] bg-[var(--surface)] flex flex-col shadow-2xl">
+          <div className="absolute left-0 top-0 h-full w-[280px] bg-[var(--surface)] flex flex-col shadow-2xl">
             <div className="flex items-center justify-between px-5 h-[var(--header-h)] border-b border-[var(--border)]">
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-[8px] bg-[var(--accent)] flex items-center justify-center">
-                  <span className="text-white font-bold text-[10px]">TVB</span>
+                <div className="w-7 h-7 rounded-[8px] bg-[var(--accent)] flex items-center justify-center shadow-sm">
+                  <span className="text-white font-semibold text-[10px]">TVB</span>
                 </div>
-                <span className="text-[14px] font-semibold text-[var(--text-1)] tracking-[-0.03em]">
+                <span className="text-[14px] font-semibold text-[var(--text-1)] tracking-[-0.02em]">
                   TVB Allocator
                 </span>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="w-7 h-7 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-white/[0.04] transition-all duration-150"
+                className="w-7 h-7 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-2)] hover:bg-black/[0.04] transition-all duration-150"
               >
                 <X size={15} />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-5">
+            <nav className="flex-1 overflow-y-auto px-2.5 py-4 space-y-5">
               {drawerSections.map(section => (
                 <div key={section.label}>
-                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-3)]">
+                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-3)]">
                     {section.label}
                   </p>
                   <div className="space-y-[2px]">
@@ -124,24 +124,14 @@ export function Header() {
                           href={href}
                           onClick={() => setOpen(false)}
                           className={cn(
-                            'group relative flex items-center gap-3 px-3 py-[7px] rounded-[var(--radius-sm)] text-[13px] transition-all duration-150',
+                            'flex items-center gap-2.5 px-3 py-[7px] rounded-[var(--radius-sm)] text-[13px] transition-all duration-150',
                             active
-                              ? 'text-[var(--text-1)]'
-                              : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
+                              ? 'bg-[var(--accent-dim)] text-[var(--accent)] font-medium'
+                              : 'text-[var(--text-2)] hover:bg-black/[0.03] hover:text-[var(--text-1)]'
                           )}
                         >
-                          {active && (
-                            <span className="absolute left-0 inset-y-[5px] w-[2.5px] rounded-r-full bg-[var(--accent)]" />
-                          )}
-                          <Icon
-                            size={15}
-                            strokeWidth={active ? 2.2 : 1.8}
-                            className={cn(
-                              'shrink-0',
-                              active ? 'text-[var(--accent)]' : 'text-[var(--text-3)] group-hover:text-[var(--text-2)]'
-                            )}
-                          />
-                          <span className={cn('leading-none', active && 'font-medium')}>{label}</span>
+                          <Icon size={15} strokeWidth={active ? 2.2 : 1.8} className="shrink-0" />
+                          <span className="leading-none">{label}</span>
                         </Link>
                       )
                     })}

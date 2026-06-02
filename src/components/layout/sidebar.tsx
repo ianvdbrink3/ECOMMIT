@@ -58,27 +58,19 @@ function NavLink({
       title={collapsed ? label : undefined}
       className={cn(
         'group relative flex items-center rounded-[var(--radius-sm)] transition-all duration-150',
-        collapsed ? 'justify-center w-9 h-9 mx-auto' : 'gap-3 px-3 py-[7px]',
+        collapsed ? 'justify-center w-9 h-9 mx-auto' : 'gap-2.5 px-3 py-[7px]',
         active
-          ? 'text-[var(--text-1)]'
-          : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
+          ? 'bg-[var(--accent-dim)] text-[var(--accent)]'
+          : 'text-[var(--text-2)] hover:bg-black/[0.03] hover:text-[var(--text-1)]'
       )}
     >
-      {active && (
-        <span className="absolute left-0 inset-y-[5px] w-[2.5px] rounded-r-full bg-[var(--accent)]" />
-      )}
       <Icon
         size={15}
         strokeWidth={active ? 2.2 : 1.8}
-        className={cn(
-          'shrink-0 transition-colors duration-150',
-          active
-            ? 'text-[var(--accent)]'
-            : 'text-[var(--text-3)] group-hover:text-[var(--text-2)]'
-        )}
+        className="shrink-0"
       />
       {!collapsed && (
-        <span className={cn('text-[13px] leading-none tracking-[-0.01em]', active && 'font-medium')}>
+        <span className={cn('text-[13px] leading-none tracking-[-0.01em]', active ? 'font-medium' : '')}>
           {label}
         </span>
       )}
@@ -101,25 +93,25 @@ export function Sidebar() {
       <div
         className={cn(
           'flex items-center h-[var(--header-h)] border-b border-[var(--border)]',
-          collapsed ? 'justify-center' : 'px-4 gap-3'
+          collapsed ? 'justify-center' : 'px-5 gap-3'
         )}
       >
-        <div className="shrink-0 w-7 h-7 rounded-[8px] bg-[var(--accent)] flex items-center justify-center">
-          <span className="text-white font-bold text-[10px] tracking-[-0.02em]">TVB</span>
+        <div className="shrink-0 w-7 h-7 rounded-[8px] bg-[var(--accent)] flex items-center justify-center shadow-sm">
+          <span className="text-white font-semibold text-[10px] tracking-tight">TVB</span>
         </div>
         {!collapsed && (
-          <span className="text-[14px] font-semibold text-[var(--text-1)] tracking-[-0.03em] truncate">
+          <span className="text-[14px] font-semibold text-[var(--text-1)] tracking-[-0.02em] truncate">
             TVB Allocator
           </span>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-5">
+      <nav className="flex-1 overflow-y-auto px-2.5 py-4 space-y-5">
         {sections.map(section => (
           <div key={section.label}>
             {!collapsed && (
-              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-3)]">
+              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-3)]">
                 {section.label}
               </p>
             )}
@@ -133,7 +125,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="shrink-0 border-t border-[var(--border)] px-2 py-3 space-y-[2px]">
+      <div className="shrink-0 border-t border-[var(--border)] px-2.5 py-3 space-y-[2px]">
         <NavLink href="/settings" icon={Settings} label="Instellingen" collapsed={collapsed} />
         <div className={cn(
           'flex items-center pt-2',
