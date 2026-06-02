@@ -1,138 +1,130 @@
 import Link from 'next/link'
-import {
-  Calculator,
-  PieChart,
-  Layers,
-  Filter,
-  Skull,
-  Trophy,
-  TrendingUp,
-  DollarSign,
-  ArrowRight,
-} from 'lucide-react'
+import { ArrowRight, Calculator, PieChart, Layers, Filter, Skull, Trophy, TrendingUp, DollarSign } from 'lucide-react'
 
 const modules = [
   {
     href: '/economics',
     icon: Calculator,
     title: 'Product Economics',
-    description: 'Echte marge, netto winst en break-even CPA.',
-    color: 'text-blue-400',
+    desc: 'Echte marge, netto winst en break-even CPA.',
+    color: '#3b82f6',
     tag: 'Basis',
-    tagColor: 'text-blue-400 bg-blue-500/10',
   },
   {
     href: '/budget-planner',
     icon: PieChart,
     title: 'Budget Planner',
-    description: 'Verdeel testbudget over creatives × hooks × angles.',
-    color: 'text-violet-400',
+    desc: 'Verdeel testbudget over creatives × hooks × angles.',
+    color: '#8b5cf6',
     tag: 'Basis',
-    tagColor: 'text-violet-400 bg-violet-500/10',
   },
   {
     href: '/creative-analysis',
     icon: Layers,
     title: 'Creative Analyse',
-    description: 'CTR, CPC, CPM — beoordeel als Zwak, Gemiddeld, Goed of Sterk.',
-    color: 'text-pink-400',
+    desc: 'Beoordeel CTR, CPC en CPM. Classificeer als Zwak t/m Sterk.',
+    color: '#ec4899',
     tag: 'Analyse',
-    tagColor: 'text-pink-400 bg-pink-500/10',
   },
   {
     href: '/funnel-analysis',
     icon: Filter,
     title: 'Funnel Analyse',
-    description: 'Diagnose van winkelwagen-, checkout- en aankoopuitval.',
-    color: 'text-amber-400',
+    desc: 'Diagnose van winkelwagen-, checkout- en aankoopuitval.',
+    color: '#eab308',
     tag: 'Analyse',
-    tagColor: 'text-amber-400 bg-amber-500/10',
   },
   {
     href: '/kill-engine',
     icon: Skull,
     title: 'Kill Engine',
-    description: 'Stop verlieslatende campagnes automatisch via 5 kill-regels.',
-    color: 'text-red-400',
+    desc: 'Stop verlieslatende campagnes automatisch via 5 kill-regels.',
+    color: '#ef4444',
     tag: 'Actie',
-    tagColor: 'text-red-400 bg-red-500/10',
   },
   {
     href: '/winner-detection',
     icon: Trophy,
     title: 'Winner Detectie',
-    description: 'Beoordeel op ROAS + CPA + CTR + CVR → STOP / WACHT / SCHAAL.',
-    color: 'text-yellow-400',
+    desc: 'Beoordeel op ROAS + CPA + CTR → STOP / WACHT / SCHAAL.',
+    color: '#f59e0b',
     tag: 'Actie',
-    tagColor: 'text-yellow-400 bg-yellow-500/10',
   },
   {
     href: '/scaling-center',
     icon: TrendingUp,
     title: 'Scaling Center',
-    description: '10-daagse schaalroadmap voor gevalideerde winnaars.',
-    color: 'text-emerald-400',
-    tag: 'Schalen',
-    tagColor: 'text-emerald-400 bg-emerald-500/10',
+    desc: '10-daagse schaalroadmap voor gevalideerde winnaars.',
+    color: '#22c55e',
+    tag: 'Actie',
   },
   {
     href: '/cash-forecast',
     icon: DollarSign,
     title: 'Cash Forecast',
-    description: 'Runway, dagelijkse burn en verwachte depletiedatum.',
-    color: 'text-teal-400',
+    desc: 'Runway, dagelijkse burn en verwachte depletiedatum.',
+    color: '#14b8a6',
     tag: 'Finance',
-    tagColor: 'text-teal-400 bg-teal-500/10',
   },
 ]
 
 const workflow = [
-  { step: 1, text: 'Bereken je echte marge en break-even CPA', href: '/economics' },
-  { step: 2, text: 'Verdeel testbudget over creatives, hooks en angles', href: '/budget-planner' },
-  { step: 3, text: 'Analyseer CTR, CPC en CPM per creative', href: '/creative-analysis' },
-  { step: 4, text: 'Identificeer knelpunten in de conversiefunnel', href: '/funnel-analysis' },
-  { step: 5, text: 'Stop verlieslatende campagnes met de Kill Engine', href: '/kill-engine' },
-  { step: 6, text: 'Valideer winnaars op ROAS, CPA en CTR', href: '/winner-detection' },
-  { step: 7, text: 'Schaal winners via de 10-daagse roadmap', href: '/scaling-center' },
-  { step: 8, text: 'Houd je budget runway dagelijks bij', href: '/cash-forecast' },
+  { step: 1, label: 'Bereken break-even CPA', href: '/economics', tag: 'Basis' },
+  { step: 2, label: 'Verdeel testbudget', href: '/budget-planner', tag: 'Basis' },
+  { step: 3, label: 'Analyseer creatives', href: '/creative-analysis', tag: 'Analyse' },
+  { step: 4, label: 'Diagnose funnel', href: '/funnel-analysis', tag: 'Analyse' },
+  { step: 5, label: 'Stop onderpresteerders', href: '/kill-engine', tag: 'Actie' },
+  { step: 6, label: 'Valideer winnaars', href: '/winner-detection', tag: 'Actie' },
+  { step: 7, label: 'Schaal winners', href: '/scaling-center', tag: 'Actie' },
+  { step: 8, label: 'Monitor runway', href: '/cash-forecast', tag: 'Finance' },
 ]
+
+const tagColors: Record<string, string> = {
+  Basis: 'text-blue-400 bg-blue-500/10',
+  Analyse: 'text-amber-400 bg-amber-500/10',
+  Actie: 'text-red-400 bg-red-500/10',
+  Finance: 'text-teal-400 bg-teal-500/10',
+}
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="max-w-4xl space-y-10">
 
-      {/* Header */}
-      <div className="space-y-1">
-        <h2 className="text-base font-semibold text-[#efefef] tracking-tight">
-          Truin vdBrink Test Budget Allocator
-        </h2>
-        <p className="text-[13px] text-[#555555]">
-          Alloceer kapitaal intelligent. Stop verlies snel. Schaal winnaars met vertrouwen.
+      {/* Hero */}
+      <div>
+        <h1 className="text-[22px] font-semibold text-[var(--text-1)] tracking-tight leading-tight">
+          Goedemorgen
+        </h1>
+        <p className="mt-1 text-[14px] text-[var(--text-3)] max-w-lg">
+          TVB Allocator helpt je testbudget wetenschappelijk verdelen, verlies snel stoppen en winnaars gecontroleerd opschalen.
         </p>
       </div>
 
-      {/* Module grid */}
-      <div>
-        <p className="text-[11px] font-medium text-[#3d3d3d] uppercase tracking-widest mb-3">
-          Modules
-        </p>
-        <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {modules.map(({ href, icon: Icon, title, description, color, tag, tagColor }) => (
-            <Link key={href} href={href} className="group">
-              <div className="h-full rounded-xl border border-[#1e1e1e] bg-[#0f0f0f] p-4 transition-all duration-150 hover:border-[#2a2a2a] hover:bg-[#111111]">
+      {/* Modules */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-3)]">
+            Modules
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          {modules.map(({ href, icon: Icon, title, desc, color, tag }) => (
+            <Link key={href} href={href} className="group block">
+              <div className="h-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4 transition-all duration-150 hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)]">
                 <div className="flex items-start justify-between mb-3">
-                  <Icon className={`w-4 h-4 ${color}`} />
-                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-md ${tagColor}`}>
+                  <div
+                    className="w-8 h-8 rounded-[var(--radius-sm)] flex items-center justify-center"
+                    style={{ background: `${color}18` }}
+                  >
+                    <Icon size={15} style={{ color }} />
+                  </div>
+                  <span className={`text-[10px] font-medium px-1.5 py-[3px] rounded-[4px] ${tagColors[tag]}`}>
                     {tag}
                   </span>
                 </div>
-                <p className="text-[13px] font-medium text-[#cccccc] mb-1.5 leading-tight">
-                  {title}
-                </p>
-                <p className="text-[12px] text-[#555555] leading-relaxed mb-3">
-                  {description}
-                </p>
-                <div className="flex items-center gap-1 text-[#333333] group-hover:text-blue-500 transition-colors">
+                <p className="text-[13px] font-medium text-[var(--text-1)] leading-tight mb-1.5">{title}</p>
+                <p className="text-[12px] text-[var(--text-3)] leading-relaxed mb-3">{desc}</p>
+                <div className="flex items-center gap-1 text-[var(--text-3)] group-hover:text-[var(--accent)] transition-colors duration-150">
                   <span className="text-[11px]">Openen</span>
                   <ArrowRight size={10} />
                 </div>
@@ -140,31 +132,30 @@ export default function DashboardPage() {
             </Link>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Workflow */}
-      <div>
-        <p className="text-[11px] font-medium text-[#3d3d3d] uppercase tracking-widest mb-3">
+      <section>
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-3)] mb-4">
           Aanbevolen workflow
-        </p>
-        <div className="rounded-xl border border-[#1e1e1e] bg-[#0f0f0f] divide-y divide-[#161616]">
-          {workflow.map(({ step, text, href }) => (
+        </h2>
+        <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] overflow-hidden">
+          {workflow.map(({ step, label, href, tag }, i) => (
             <Link
               key={step}
               href={href}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[#111111] transition-colors group"
+              className={`group flex items-center gap-4 px-5 py-3.5 transition-colors duration-100 hover:bg-white/[0.03] ${i > 0 ? 'border-t border-[var(--border)]' : ''}`}
             >
-              <span className="shrink-0 w-5 h-5 rounded-full bg-[#1a1a1a] text-[#555555] text-[11px] font-medium flex items-center justify-center group-hover:bg-blue-600/20 group-hover:text-blue-400 transition-all">
+              <span className="shrink-0 w-5 h-5 rounded-full border border-[var(--border-strong)] text-[var(--text-3)] text-[11px] font-medium flex items-center justify-center group-hover:border-[var(--accent)]/40 group-hover:text-[var(--accent)] transition-all">
                 {step}
               </span>
-              <span className="text-[13px] text-[#666666] group-hover:text-[#cccccc] transition-colors">
-                {text}
-              </span>
-              <ArrowRight size={11} className="ml-auto text-[#2a2a2a] group-hover:text-[#444444] transition-colors shrink-0" />
+              <span className="flex-1 text-[13px] text-[var(--text-2)] group-hover:text-[var(--text-1)] transition-colors">{label}</span>
+              <span className={`hidden sm:block text-[10px] font-medium px-1.5 py-[3px] rounded-[4px] ${tagColors[tag]}`}>{tag}</span>
+              <ArrowRight size={13} className="text-[var(--text-3)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
             </Link>
           ))}
         </div>
-      </div>
+      </section>
 
     </div>
   )

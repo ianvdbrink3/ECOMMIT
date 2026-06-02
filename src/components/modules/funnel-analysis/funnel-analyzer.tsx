@@ -2,16 +2,15 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { funnelSchema, type FunnelFormValues } from '@/lib/validations/funnel'
 import { analyzeFunnel } from '@/domain/funnel/analyzer'
 import type { FunnelAnalysis } from '@/domain/funnel/types'
-import { formatPercent, formatNumber } from '@/lib/utils'
-import { AlertTriangle, CheckCircle, Info } from 'lucide-react'
+import { formatPercent, formatNumber, cn } from '@/lib/utils'
+import { AlertTriangle, CheckCircle, Info, Filter } from 'lucide-react'
 import { useState } from 'react'
 import {
   FunnelChart,
@@ -24,28 +23,46 @@ import {
 const diagnosisConfig = {
   HEALTHY: {
     icon: CheckCircle,
-    variant: 'success' as const,
-    title: 'Funnel is Healthy',
+    title: 'Funnel is gezond',
     color: '#22c55e',
+    bg: 'bg-[var(--success-dim)]',
+    border: 'border-[var(--success)]/20',
+    textColor: 'text-[var(--success)]',
   },
   PRODUCT_PAGE_ISSUE: {
     icon: AlertTriangle,
-    variant: 'warning' as const,
     title: 'Productpagina-probleem gedetecteerd',
-    color: '#f59e0b',
+    color: '#eab308',
+    bg: 'bg-[var(--warning-dim)]',
+    border: 'border-[var(--warning)]/20',
+    textColor: 'text-[var(--warning)]',
   },
   PRICING_ISSUE: {
     icon: AlertTriangle,
-    variant: 'warning' as const,
     title: 'Prijsprobleem gedetecteerd',
-    color: '#f59e0b',
+    color: '#eab308',
+    bg: 'bg-[var(--warning-dim)]',
+    border: 'border-[var(--warning)]/20',
+    textColor: 'text-[var(--warning)]',
   },
   TRUST_ISSUE: {
     icon: Info,
-    variant: 'warning' as const,
     title: 'Vertrouwensprobleem gedetecteerd',
     color: '#3b82f6',
+    bg: 'bg-[var(--accent-dim)]',
+    border: 'border-[var(--accent)]/20',
+    textColor: 'text-[var(--accent)]',
   },
+}
+
+function Field({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) {
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-[11px] text-[var(--danger)]">{error}</p>}
+    </div>
+  )
 }
 
 export function FunnelAnalyzer() {
@@ -80,85 +97,74 @@ export function FunnelAnalyzer() {
 
   const funnelData = formValues
     ? [
-        { name: 'Sessions', value: formValues.sessions, fill: '#3b82f6' },
-        { name: 'Add to Cart', value: formValues.addToCart, fill: '#8b5cf6' },
+        { name: 'Sessies', value: formValues.sessions, fill: '#3b82f6' },
+        { name: 'Winkelwagen', value: formValues.addToCart, fill: '#8b5cf6' },
         { name: 'Checkout', value: formValues.initiateCheckout, fill: '#f59e0b' },
-        { name: 'Purchases', value: formValues.purchases, fill: '#22c55e' },
+        { name: 'Aankopen', value: formValues.purchases, fill: '#22c55e' },
       ]
     : []
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>Funnel Analysis</CardTitle>
-          <CardDescription>
-            Diagnose conversion bottlenecks in your sales funnel
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {[
-              { id: 'sessions', label: 'Total Sessions', placeholder: '5000' },
-              { id: 'addToCart', label: 'Add to Cart', placeholder: '250' },
-              { id: 'initiateCheckout', label: 'Initiate Checkout', placeholder: '120' },
-              { id: 'purchases', label: 'Purchases', placeholder: '45' },
-            ].map(({ id, label, placeholder }) => (
-              <div key={id} className="space-y-2">
-                <Label htmlFor={id}>{label}</Label>
-                <Input
-                  id={id}
-                  type="number"
-                  min="0"
-                  placeholder={placeholder}
-                  {...register(id as keyof FunnelFormValues)}
-                />
-                {errors[id as keyof FunnelFormValues] && (
-                  <p className="text-xs text-red-400">
-                    {errors[id as keyof FunnelFormValues]?.message}
-                  </p>
-                )}
-              </div>
-            ))}
-            <Button type="submit" className="w-full" loading={loading}>
-              Analyseer funnel
-            </Button>
-          </form>
+      <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)]">
+        <div className="px-5 py-4 border-b border-[var(--border)]">
+          <h2 className="text-[13px] font-semibold text-[var(--text-1)]">Funnel Analyse</h2>
+          <p className="text-[12px] text-[var(--text-3)] mt-0.5">Diagnose conversieproblemen in je verkoopfunnel</p>
+        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
+          {[
+            { id: 'sessions', label: 'Totaal sessies', placeholder: '5000' },
+            { id: 'addToCart', label: 'Winkelwagen toevoegen', placeholder: '250' },
+            { id: 'initiateCheckout', label: 'Checkout starten', placeholder: '120' },
+            { id: 'purchases', label: 'Aankopen', placeholder: '45' },
+          ].map(({ id, label, placeholder }) => (
+            <Field key={id} label={label} error={errors[id as keyof FunnelFormValues]?.message}>
+              <Input
+                type="number"
+                min="0"
+                placeholder={placeholder}
+                {...register(id as keyof FunnelFormValues)}
+              />
+            </Field>
+          ))}
+          <Button type="submit" className="w-full" loading={loading}>
+            Analyseer funnel
+          </Button>
+        </form>
 
-          {/* Benchmarks */}
-          <div className="mt-6 space-y-2">
-            <p className="text-xs text-[#525252] uppercase tracking-wider">Stage Benchmarks</p>
-            {[
-              { stage: 'Session → ATC', benchmark: '≥ 3%', description: 'Add-to-cart rate' },
-              { stage: 'ATC → Checkout', benchmark: '≥ 40%', description: 'Checkout initiation' },
-              { stage: 'Checkout → Purchase', benchmark: '≥ 50%', description: 'Purchase completion' },
-            ].map(({ stage, benchmark, description }) => (
-              <div key={stage} className="flex items-center justify-between text-xs">
-                <div>
-                  <span className="text-[#a3a3a3]">{stage}</span>
-                  <span className="text-[#525252] ml-2">({description})</span>
-                </div>
-                <span className="text-green-400">{benchmark}</span>
+        {/* Benchmarks */}
+        <div className="px-5 pb-5 space-y-2">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-[0.08em] font-semibold">Stage Benchmarks</p>
+          {[
+            { stage: 'Sessie → Winkelwagen', benchmark: '≥ 3%', description: 'Winkelwagenratio' },
+            { stage: 'Winkelwagen → Checkout', benchmark: '≥ 40%', description: 'Checkout-initiatie' },
+            { stage: 'Checkout → Aankoop', benchmark: '≥ 50%', description: 'Aankoopafronding' },
+          ].map(({ stage, benchmark, description }) => (
+            <div key={stage} className="flex items-center justify-between text-[12px]">
+              <div>
+                <span className="text-[var(--text-2)]">{stage}</span>
+                <span className="text-[var(--text-3)] ml-2">({description})</span>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <span className="text-[var(--success)]">{benchmark}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {result && formValues ? (
         <div className="space-y-4">
-          {/* Diagnosis Alert */}
+          {/* Diagnosis */}
           {(() => {
             const config = diagnosisConfig[result.diagnosis]
             const Icon = config.icon
             return (
-              <Alert variant={config.variant}>
-                <Icon className="h-4 w-4" />
-                <AlertTitle>{config.title}</AlertTitle>
-                <AlertDescription className="mt-1 text-sm">
-                  {result.recommendation}
-                </AlertDescription>
-              </Alert>
+              <div className={cn('rounded-[var(--radius)] border p-4', config.bg, config.border)}>
+                <div className="flex items-center gap-3 mb-2">
+                  <Icon size={16} className={config.textColor} />
+                  <p className={cn('text-[13px] font-semibold', config.textColor)}>{config.title}</p>
+                </div>
+                <p className="text-[13px] text-[var(--text-2)]">{result.recommendation}</p>
+              </div>
             )
           })()}
 
@@ -166,25 +172,25 @@ export function FunnelAnalyzer() {
           <div className="grid grid-cols-2 gap-3">
             {[
               {
-                label: 'ATC Rate',
+                label: 'ATC Ratio',
                 value: formatPercent(result.atcRate, 1),
                 benchmark: 3,
                 actual: result.atcRate,
               },
               {
-                label: 'Checkout Rate',
+                label: 'Checkout Ratio',
                 value: formatPercent(result.checkoutRate, 1),
                 benchmark: 40,
                 actual: result.checkoutRate,
               },
               {
-                label: 'Purchase Rate',
+                label: 'Aankoopratio',
                 value: formatPercent(result.purchaseRate, 1),
                 benchmark: 50,
                 actual: result.purchaseRate,
               },
               {
-                label: 'Overall CVR',
+                label: 'Totaal CVR',
                 value: formatPercent(result.overallConversionRate, 2),
                 benchmark: 2,
                 actual: result.overallConversionRate,
@@ -192,20 +198,21 @@ export function FunnelAnalyzer() {
             ].map(({ label, value, benchmark, actual }) => (
               <Card
                 key={label}
-                className={
-                  actual >= benchmark ? 'border-green-500/30' : 'border-red-500/30'
-                }
+                className={cn(
+                  actual >= benchmark ? 'border-[var(--success)]/30' : 'border-[var(--danger)]/30'
+                )}
               >
                 <CardContent className="p-4">
-                  <p className="text-xs text-[#737373]">{label}</p>
+                  <p className="text-[11px] text-[var(--text-3)]">{label}</p>
                   <p
-                    className={`text-lg font-bold mt-0.5 ${
-                      actual >= benchmark ? 'text-green-400' : 'text-red-400'
-                    }`}
+                    className={cn(
+                      'text-lg font-bold mt-0.5',
+                      actual >= benchmark ? 'text-[var(--success)]' : 'text-[var(--danger)]'
+                    )}
                   >
                     {value}
                   </p>
-                  <p className="text-xs text-[#525252]">target: {benchmark}%</p>
+                  <p className="text-[11px] text-[var(--text-3)]">doel: {benchmark}%</p>
                 </CardContent>
               </Card>
             ))}
@@ -214,17 +221,17 @@ export function FunnelAnalyzer() {
           {/* Funnel Visualization */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Funnel Visualization</CardTitle>
+              <CardTitle>Funnel visualisatie</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <FunnelChart>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#111111',
-                      border: '1px solid #262626',
+                      backgroundColor: 'var(--surface-2)',
+                      border: '1px solid var(--border)',
                       borderRadius: '8px',
-                      color: '#f5f5f5',
+                      color: 'var(--text-1)',
                     }}
                     formatter={(value, name) => [
                       formatNumber(value as number),
@@ -238,7 +245,7 @@ export function FunnelAnalyzer() {
                   >
                     <LabelList
                       position="right"
-                      fill="#a3a3a3"
+                      fill="var(--text-2)"
                       stroke="none"
                       dataKey="name"
                       style={{ fontSize: 12 }}
@@ -252,25 +259,25 @@ export function FunnelAnalyzer() {
           {/* Drop-off Summary */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Drop-off Summary</CardTitle>
+              <CardTitle>Uitvalssamenvatting</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {[
                 {
-                  from: 'Sessions',
-                  to: 'ATC',
+                  from: 'Sessies',
+                  to: 'Winkelwagen',
                   fromVal: formValues.sessions,
                   toVal: formValues.addToCart,
                 },
                 {
-                  from: 'ATC',
+                  from: 'Winkelwagen',
                   to: 'Checkout',
                   fromVal: formValues.addToCart,
                   toVal: formValues.initiateCheckout,
                 },
                 {
                   from: 'Checkout',
-                  to: 'Purchase',
+                  to: 'Aankoop',
                   fromVal: formValues.initiateCheckout,
                   toVal: formValues.purchases,
                 },
@@ -278,12 +285,12 @@ export function FunnelAnalyzer() {
                 const dropoff = fromVal - toVal
                 const dropoffRate = fromVal > 0 ? (dropoff / fromVal) * 100 : 0
                 return (
-                  <div key={`${from}-${to}`} className="flex items-center justify-between text-xs">
-                    <span className="text-[#a3a3a3]">
+                  <div key={`${from}-${to}`} className="flex items-center justify-between text-[12px]">
+                    <span className="text-[var(--text-2)]">
                       {from} → {to}
                     </span>
-                    <span className="text-red-400">
-                      -{formatNumber(dropoff)} ({formatPercent(dropoffRate, 0)} drop-off)
+                    <span className="text-[var(--danger)]">
+                      -{formatNumber(dropoff)} ({formatPercent(dropoffRate, 0)} uitval)
                     </span>
                   </div>
                 )
@@ -292,9 +299,13 @@ export function FunnelAnalyzer() {
           </Card>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
+        <div className="flex flex-col items-center justify-center min-h-[400px] rounded-[var(--radius)] border border-dashed border-[var(--border)] gap-3">
+          <div className="w-10 h-10 rounded-[var(--radius)] bg-[var(--surface-2)] flex items-center justify-center">
+            <Filter size={18} className="text-[var(--text-3)]" />
+          </div>
           <div className="text-center">
-            <p className="text-[#525252] text-sm">Enter funnel data to see analysis</p>
+            <p className="text-[13px] font-medium text-[var(--text-2)]">Geen resultaten</p>
+            <p className="text-[12px] text-[var(--text-3)] mt-1">Voer funnel data in om de analyse te zien</p>
           </div>
         </div>
       )}

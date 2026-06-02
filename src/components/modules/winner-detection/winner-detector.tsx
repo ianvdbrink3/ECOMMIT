@@ -2,11 +2,10 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { winnerSchema, type WinnerFormValues } from '@/lib/validations/winner'
 import { detectWinner } from '@/domain/winner/detector'
@@ -18,31 +17,40 @@ import {
   RadialBarChart,
   RadialBar,
   ResponsiveContainer,
-  Tooltip,
 } from 'recharts'
 
 const verdictConfig = {
   SCALE: {
     icon: TrendingUp,
-    color: 'text-green-400',
-    bg: 'bg-green-500/10 border-green-500/30',
-    label: 'Scale It',
-    description: 'This is a winner. Scale budget aggressively.',
+    color: 'text-[var(--success)]',
+    bg: 'bg-[var(--success-dim)] border-[var(--success)]/30',
+    label: 'Schalen',
+    description: 'Dit is een winnaar. Schaal het budget agressief.',
   },
   OBSERVE: {
     icon: Eye,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10 border-amber-500/30',
-    label: 'Observe',
-    description: 'Mixed signals. Give it more time and data.',
+    color: 'text-[var(--warning)]',
+    bg: 'bg-[var(--warning-dim)] border-[var(--warning)]/30',
+    label: 'Observeren',
+    description: 'Gemengde signalen. Geef het meer tijd en data.',
   },
   KILL: {
     icon: Skull,
-    color: 'text-red-400',
-    bg: 'bg-red-500/10 border-red-500/30',
-    label: 'Kill It',
-    description: 'Underperforming. Kill and reallocate budget.',
+    color: 'text-[var(--danger)]',
+    bg: 'bg-[var(--danger-dim)] border-[var(--danger)]/30',
+    label: 'Killen',
+    description: 'Onderpresteerder. Kill en herverdeel het budget.',
   },
+}
+
+function Field({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) {
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-[11px] text-[var(--danger)]">{error}</p>}
+    </div>
+  )
 }
 
 export function WinnerDetector() {
@@ -75,117 +83,99 @@ export function WinnerDetector() {
   }
 
   const radialData = result
-    ? [{ name: 'Confidence', value: result.confidence, fill: '#3b82f6' }]
+    ? [{ name: 'Betrouwbaarheid', value: result.confidence, fill: 'var(--accent)' }]
     : []
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>Winner Detectie</CardTitle>
-          <CardDescription>
-            Analyseer campagnemetrics om winnaars klaar voor schalen te identificeren
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="spend">Total Spend (€)</Label>
-                <Input
-                  id="spend"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="250"
-                  {...register('spend')}
-                />
-                {errors.spend && <p className="text-xs text-red-400">{errors.spend.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="revenue">Revenue (€)</Label>
-                <Input
-                  id="revenue"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="900"
-                  {...register('revenue')}
-                />
-                {errors.revenue && <p className="text-xs text-red-400">{errors.revenue.message}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="purchases">Purchases</Label>
-                <Input
-                  id="purchases"
-                  type="number"
-                  min="0"
-                  placeholder="18"
-                  {...register('purchases')}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="breakEvenCpa">Break-even CPA (€)</Label>
-                <Input
-                  id="breakEvenCpa"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="15"
-                  {...register('breakEvenCpa')}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="impressions">Impressions</Label>
-                <Input
-                  id="impressions"
-                  type="number"
-                  min="0"
-                  placeholder="15000"
-                  {...register('impressions')}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="clicks">Clicks</Label>
-                <Input
-                  id="clicks"
-                  type="number"
-                  min="0"
-                  placeholder="320"
-                  {...register('clicks')}
-                />
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full" loading={loading}>
-              <Trophy className="w-4 h-4" />
-              Detecteer winner
-            </Button>
-          </form>
-
-          {/* Scoring Criteria */}
-          <div className="mt-6 space-y-2">
-            <p className="text-xs text-[#525252] uppercase tracking-wider">Scoringscriteria</p>
-            {[
-              { factor: 'ROAS ≥ 3x', points: '+40 pts', color: 'text-green-400' },
-              { factor: 'CPA ≤ Break-Even × 0.7', points: '+30 pts', color: 'text-green-400' },
-              { factor: 'CTR ≥ 2%', points: '+20 pts', color: 'text-blue-400' },
-              { factor: 'Conv. Rate ≥ 3%', points: '+10 pts', color: 'text-blue-400' },
-            ].map(({ factor, points, color }) => (
-              <div key={factor} className="flex items-center justify-between text-xs">
-                <span className="text-[#a3a3a3]">{factor}</span>
-                <span className={color}>{points}</span>
-              </div>
-            ))}
+      <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)]">
+        <div className="px-5 py-4 border-b border-[var(--border)]">
+          <h2 className="text-[13px] font-semibold text-[var(--text-1)]">Winner Detectie</h2>
+          <p className="text-[12px] text-[var(--text-3)] mt-0.5">Analyseer campagnemetrics om winnaars klaar voor schalen te identificeren</p>
+        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Totaal spend (€)" error={errors.spend?.message}>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="250"
+                {...register('spend')}
+              />
+            </Field>
+            <Field label="Omzet (€)" error={errors.revenue?.message}>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="900"
+                {...register('revenue')}
+              />
+            </Field>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Aankopen">
+              <Input
+                type="number"
+                min="0"
+                placeholder="18"
+                {...register('purchases')}
+              />
+            </Field>
+            <Field label="Break-even CPA (€)">
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="15"
+                {...register('breakEvenCpa')}
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Impressions">
+              <Input
+                type="number"
+                min="0"
+                placeholder="15000"
+                {...register('impressions')}
+              />
+            </Field>
+            <Field label="Clicks">
+              <Input
+                type="number"
+                min="0"
+                placeholder="320"
+                {...register('clicks')}
+              />
+            </Field>
+          </div>
+
+          <Button type="submit" className="w-full" loading={loading}>
+            <Trophy size={14} />
+            Detecteer winner
+          </Button>
+        </form>
+
+        {/* Scoring Criteria */}
+        <div className="px-5 pb-5 space-y-2">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-[0.08em] font-semibold">Scoringscriteria</p>
+          {[
+            { factor: 'ROAS ≥ 3x', points: '+40 pt', color: 'text-[var(--success)]' },
+            { factor: 'CPA ≤ Break-even × 0,7', points: '+30 pt', color: 'text-[var(--success)]' },
+            { factor: 'CTR ≥ 2%', points: '+20 pt', color: 'text-[var(--accent)]' },
+            { factor: 'Conv. Rate ≥ 3%', points: '+10 pt', color: 'text-[var(--accent)]' },
+          ].map(({ factor, points, color }) => (
+            <div key={factor} className="flex items-center justify-between text-[12px]">
+              <span className="text-[var(--text-2)]">{factor}</span>
+              <span className={color}>{points}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {result ? (
         <div className="space-y-4">
@@ -194,15 +184,15 @@ export function WinnerDetector() {
             const config = verdictConfig[result.verdict]
             const Icon = config.icon
             return (
-              <div className={cn('rounded-xl border p-5', config.bg)}>
+              <div className={cn('rounded-[var(--radius)] border p-5', config.bg)}>
                 <div className="flex items-center gap-3">
-                  <Icon className={cn('w-8 h-8', config.color)} />
+                  <Icon size={28} className={config.color} />
                   <div>
-                    <p className="text-xs text-[#737373] uppercase tracking-wider">Oordeel</p>
+                    <p className="text-[10px] text-[var(--text-3)] uppercase tracking-[0.08em]">Oordeel</p>
                     <p className={cn('text-3xl font-bold', config.color)}>{config.label}</p>
                   </div>
                 </div>
-                <p className="text-sm text-[#a3a3a3] mt-3">{result.explanation}</p>
+                <p className="text-[13px] text-[var(--text-2)] mt-3">{result.explanation}</p>
               </div>
             )
           })()}
@@ -210,7 +200,7 @@ export function WinnerDetector() {
           {/* Confidence Score */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Betrouwbaarheidsscore</CardTitle>
+              <CardTitle>Betrouwbaarheidsscore</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
@@ -224,12 +214,12 @@ export function WinnerDetector() {
                     startAngle={90}
                     endAngle={-270}
                   >
-                    <RadialBar dataKey="value" cornerRadius={4} background={{ fill: '#1f1f1f' }} />
+                    <RadialBar dataKey="value" cornerRadius={4} background={{ fill: 'var(--surface-3)' }} />
                   </RadialBarChart>
                 </ResponsiveContainer>
                 <div>
-                  <p className="text-4xl font-bold text-blue-400">{result.confidence}%</p>
-                  <p className="text-xs text-[#737373] mt-1">
+                  <p className="text-4xl font-bold text-[var(--accent)]">{result.confidence}%</p>
+                  <p className="text-[12px] text-[var(--text-3)] mt-1">
                     {result.confidence >= 70
                       ? 'Hoge zekerheid'
                       : result.confidence >= 50
@@ -270,24 +260,27 @@ export function WinnerDetector() {
                 target: '≥ 1%',
               },
             ].map(({ label, value, good, target }) => (
-              <Card key={label} className={good ? 'border-green-500/20' : 'border-red-500/20'}>
+              <Card key={label} className={cn(good ? 'border-[var(--success)]/20' : 'border-[var(--danger)]/20')}>
                 <CardContent className="p-4">
-                  <p className="text-xs text-[#737373]">{label}</p>
-                  <p className={cn('text-lg font-bold mt-0.5', good ? 'text-green-400' : 'text-red-400')}>
+                  <p className="text-[11px] text-[var(--text-3)]">{label}</p>
+                  <p className={cn('text-lg font-bold mt-0.5', good ? 'text-[var(--success)]' : 'text-[var(--danger)]')}>
                     {value}
                   </p>
-                  <p className="text-[10px] text-[#525252]">target: {target}</p>
+                  <p className="text-[10px] text-[var(--text-3)]">doel: {target}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[360px] rounded-xl border border-dashed border-[#1e1e1e] gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#141414] flex items-center justify-center">
-            <Trophy className="w-5 h-5 text-[#333333]" />
+        <div className="flex flex-col items-center justify-center min-h-[360px] rounded-[var(--radius)] border border-dashed border-[var(--border)] gap-3">
+          <div className="w-10 h-10 rounded-[var(--radius)] bg-[var(--surface-2)] flex items-center justify-center">
+            <Trophy size={18} className="text-[var(--text-3)]" />
           </div>
-          <p className="text-[13px] text-[#444444]">Voer metrics in om winners te detecteren</p>
+          <div className="text-center">
+            <p className="text-[13px] font-medium text-[var(--text-2)]">Geen resultaten</p>
+            <p className="text-[12px] text-[var(--text-3)] mt-1">Voer metrics in om winners te detecteren</p>
+          </div>
         </div>
       )}
     </div>

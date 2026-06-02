@@ -2,12 +2,11 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { cashSchema, type CashFormValues } from '@/lib/validations/cash'
 import { calculateCashForecast } from '@/domain/cash/forecast'
 import type { CashForecastResult } from '@/domain/cash/types'
@@ -24,6 +23,16 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts'
+
+function Field({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) {
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-[11px] text-[var(--danger)]">{error}</p>}
+    </div>
+  )
+}
 
 export function CashForecastForm() {
   const [result, setResult] = useState<CashForecastResult | null>(null)
@@ -69,138 +78,118 @@ export function CashForecastForm() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>Cash Forecast</CardTitle>
-          <CardDescription>
-            Forecast your remaining budget runway and estimated returns
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="remainingBudget">Remaining Budget (€)</Label>
+      <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)]">
+        <div className="px-5 py-4 border-b border-[var(--border)]">
+          <h2 className="text-[13px] font-semibold text-[var(--text-1)]">Cash Forecast</h2>
+          <p className="text-[12px] text-[var(--text-3)] mt-0.5">Forecast je resterend budget runway en geschatte opbrengsten</p>
+        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
+          <Field label="Resterend budget (€)" error={errors.remainingBudget?.message}>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="2500"
+              {...register('remainingBudget')}
+            />
+          </Field>
+
+          <Field label="Huidig dagbudget (€)" error={errors.dailySpend?.message}>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="120"
+              {...register('dailySpend')}
+            />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Gemiddeld CPA (€)" error={errors.averageCpa?.message}>
               <Input
-                id="remainingBudget"
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="2500"
-                {...register('remainingBudget')}
+                placeholder="14.50"
+                {...register('averageCpa')}
               />
-              {errors.remainingBudget && (
-                <p className="text-xs text-red-400">{errors.remainingBudget.message}</p>
-              )}
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="dailySpend">Current Daily Spend (€)</Label>
+            <Field label="Huidig ROAS" error={errors.roas?.message}>
               <Input
-                id="dailySpend"
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="120"
-                {...register('dailySpend')}
+                placeholder="2.8"
+                {...register('roas')}
               />
-              {errors.dailySpend && (
-                <p className="text-xs text-red-400">{errors.dailySpend.message}</p>
-              )}
-            </div>
+            </Field>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="averageCpa">Average CPA (€)</Label>
-                <Input
-                  id="averageCpa"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="14.50"
-                  {...register('averageCpa')}
-                />
-                {errors.averageCpa && (
-                  <p className="text-xs text-red-400">{errors.averageCpa.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="roas">Current ROAS</Label>
-                <Input
-                  id="roas"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="2.8"
-                  {...register('roas')}
-                />
-                {errors.roas && (
-                  <p className="text-xs text-red-400">{errors.roas.message}</p>
-                )}
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full" loading={loading}>
-              <DollarSign className="w-4 h-4" />
-              Genereer forecast
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <Button type="submit" className="w-full" loading={loading}>
+            <DollarSign size={14} />
+            Genereer forecast
+          </Button>
+        </form>
+      </div>
 
       {result && formValues ? (
         <div className="space-y-4">
-          {/* Recommendation Alert */}
-          <Alert variant={result.runway < 3 ? 'destructive' : result.runway < 7 || !result.isViable ? 'warning' : 'success'}>
-            {result.runway < 7 || !result.isViable ? (
-              <AlertTriangle className="h-4 w-4" />
-            ) : (
-              <CheckCircle className="h-4 w-4" />
-            )}
-            <AlertTitle>
-              {result.runway < 3
-                ? 'Critical: Budget Nearly Depleted'
-                : result.runway < 7
-                  ? 'Warning: Low Budget'
-                  : !result.isViable
-                    ? 'Warning: Low ROAS'
-                    : 'Budget Health: Good'}
-            </AlertTitle>
-            <AlertDescription className="text-sm mt-1">
-              {result.recommendation}
-            </AlertDescription>
-          </Alert>
+          {/* Status Banner */}
+          {(() => {
+            const isCritical = result.runway < 3
+            const isWarning = result.runway < 7 || !result.isViable
+            const bg = isCritical ? 'bg-[var(--danger-dim)] border-[var(--danger)]/20' : isWarning ? 'bg-[var(--warning-dim)] border-[var(--warning)]/20' : 'bg-[var(--success-dim)] border-[var(--success)]/20'
+            const textColor = isCritical ? 'text-[var(--danger)]' : isWarning ? 'text-[var(--warning)]' : 'text-[var(--success)]'
+            const Icon = isWarning || isCritical ? AlertTriangle : CheckCircle
+            const title = isCritical
+              ? 'Kritiek: Budget bijna leeg'
+              : result.runway < 7
+                ? 'Waarschuwing: Laag budget'
+                : !result.isViable
+                  ? 'Waarschuwing: Laag ROAS'
+                  : 'Budgetstatus: Goed'
+            return (
+              <div className={cn('rounded-[var(--radius)] border p-4', bg)}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon size={15} className={textColor} />
+                  <p className={cn('text-[13px] font-semibold', textColor)}>{title}</p>
+                </div>
+                <p className="text-[13px] text-[var(--text-2)]">{result.recommendation}</p>
+              </div>
+            )
+          })()}
 
           {/* Key Metrics */}
           <div className="grid grid-cols-2 gap-3">
-            <Card className={result.runway < 7 ? 'border-red-500/30' : 'border-green-500/30'}>
+            <Card className={cn(result.runway < 7 ? 'border-[var(--danger)]/30' : 'border-[var(--success)]/30')}>
               <CardContent className="p-4">
-                <p className="text-xs text-[#737373]">Budget Runway</p>
+                <p className="text-[11px] text-[var(--text-3)]">Budget runway</p>
                 <p className={cn(
                   'text-2xl font-bold',
-                  result.runway < 7 ? 'text-red-400' : 'text-green-400'
+                  result.runway < 7 ? 'text-[var(--danger)]' : 'text-[var(--success)]'
                 )}>
                   {result.runway === Infinity ? '∞' : `${Math.floor(result.runway)}`}
-                  {result.runway !== Infinity && <span className="text-sm ml-1">days</span>}
+                  {result.runway !== Infinity && <span className="text-[14px] ml-1">dagen</span>}
                 </p>
                 {result.runway !== Infinity && (
-                  <p className="text-xs text-[#737373] mt-1">
-                    Depletes {formatDate(result.estimatedDepletionDate)}
+                  <p className="text-[11px] text-[var(--text-3)] mt-1">
+                    Leeg op {formatDate(result.estimatedDepletionDate)}
                   </p>
                 )}
               </CardContent>
             </Card>
 
-            <Card className={result.isViable ? 'border-green-500/30' : 'border-red-500/30'}>
+            <Card className={cn(result.isViable ? 'border-[var(--success)]/30' : 'border-[var(--danger)]/30')}>
               <CardContent className="p-4">
-                <p className="text-xs text-[#737373]">Est. Profit</p>
+                <p className="text-[11px] text-[var(--text-3)]">Geschatte winst</p>
                 <p className={cn(
                   'text-2xl font-bold',
-                  result.estimatedProfit > 0 ? 'text-green-400' : 'text-red-400'
+                  result.estimatedProfit > 0 ? 'text-[var(--success)]' : 'text-[var(--danger)]'
                 )}>
                   {formatCurrency(result.estimatedProfit)}
                 </p>
-                <Badge variant={result.isViable ? 'success' : 'danger'} className="mt-1 text-xs">
+                <Badge variant={result.isViable ? 'success' : 'danger'} className="mt-1">
                   ROAS {formValues.roas.toFixed(2)}x
                 </Badge>
               </CardContent>
@@ -211,14 +200,14 @@ export function CashForecastForm() {
           <Card>
             <CardContent className="p-4 space-y-3">
               {[
-                { label: 'Daily Burn Rate', value: formatCurrency(result.burnRate) },
-                { label: 'Estimated Purchases', value: formatNumber(Math.floor(result.estimatedPurchases)) },
-                { label: 'Estimated Revenue', value: formatCurrency(result.estimatedRevenue) },
-                { label: 'Estimated Profit', value: formatCurrency(result.estimatedProfit) },
+                { label: 'Dagelijkse burn rate', value: formatCurrency(result.burnRate) },
+                { label: 'Geschatte aankopen', value: formatNumber(Math.floor(result.estimatedPurchases)) },
+                { label: 'Geschatte omzet', value: formatCurrency(result.estimatedRevenue) },
+                { label: 'Geschatte winst', value: formatCurrency(result.estimatedProfit) },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between">
-                  <span className="text-sm text-[#a3a3a3]">{label}</span>
-                  <span className="text-sm font-semibold text-[#f5f5f5]">{value}</span>
+                  <span className="text-[13px] text-[var(--text-2)]">{label}</span>
+                  <span className="text-[13px] font-semibold text-[var(--text-1)]">{value}</span>
                 </div>
               ))}
             </CardContent>
@@ -227,7 +216,7 @@ export function CashForecastForm() {
           {/* Budget Burn Chart */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Budget Burn Curve</CardTitle>
+              <CardTitle>Budget burn curve</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={180}>
@@ -242,38 +231,38 @@ export function CashForecastForm() {
                       <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1f1f1f" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--surface-3)" />
                   <XAxis
                     dataKey="day"
-                    tick={{ fill: '#737373', fontSize: 10 }}
+                    tick={{ fill: 'var(--text-3)', fontSize: 10 }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => `D${v}`}
                   />
                   <YAxis
-                    tick={{ fill: '#737373', fontSize: 10 }}
+                    tick={{ fill: 'var(--text-3)', fontSize: 10 }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => `€${v}`}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#111111',
-                      border: '1px solid #262626',
+                      backgroundColor: 'var(--surface-2)',
+                      border: '1px solid var(--border)',
                       borderRadius: '8px',
-                      color: '#f5f5f5',
+                      color: 'var(--text-1)',
                     }}
                     formatter={(v, name) => [
                       formatCurrency(v as number),
-                      name === 'budget' ? 'Remaining Budget' : 'Cumulative Revenue',
+                      name === 'budget' ? 'Resterend budget' : 'Cumulatieve omzet',
                     ]}
                   />
                   {depletionDay !== null && (
                     <ReferenceLine
                       x={depletionDay}
-                      stroke="#ef4444"
+                      stroke="var(--danger)"
                       strokeDasharray="3 3"
-                      label={{ value: 'Depletion', fill: '#ef4444', fontSize: 10 }}
+                      label={{ value: 'Depletie', fill: 'var(--danger)', fontSize: 10 }}
                     />
                   )}
                   <Area
@@ -296,10 +285,13 @@ export function CashForecastForm() {
           </Card>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
+        <div className="flex flex-col items-center justify-center min-h-[400px] rounded-[var(--radius)] border border-dashed border-[var(--border)] gap-3">
+          <div className="w-10 h-10 rounded-[var(--radius)] bg-[var(--surface-2)] flex items-center justify-center">
+            <DollarSign size={18} className="text-[var(--text-3)]" />
+          </div>
           <div className="text-center">
-            <DollarSign className="w-8 h-8 text-[#525252] mx-auto mb-2" />
-            <p className="text-[13px] text-[#444444]">Vul het formulier in om je runway te zien</p>
+            <p className="text-[13px] font-medium text-[var(--text-2)]">Geen resultaten</p>
+            <p className="text-[12px] text-[var(--text-3)] mt-1">Vul het formulier in om je runway te zien</p>
           </div>
         </div>
       )}
