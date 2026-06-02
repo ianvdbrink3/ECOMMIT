@@ -30,6 +30,7 @@ const classificationConfig = {
 
 export function CreativeAnalyzer() {
   const [result, setResult] = useState<CreativeAnalysis | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -46,8 +47,11 @@ export function CreativeAnalyzer() {
   })
 
   const onSubmit = (data: CreativeFormValues) => {
-    const analysis = analyzeCreative(data)
-    setResult(analysis)
+    setLoading(true)
+    setTimeout(() => {
+      setResult(analyzeCreative(data))
+      setLoading(false)
+    }, 200)
   }
 
   const radarData = result
@@ -112,8 +116,8 @@ export function CreativeAnalyzer() {
               )}
             </div>
 
-            <Button type="submit" className="w-full">
-              Analyze Creative
+            <Button type="submit" className="w-full" loading={loading}>
+              Analyseer creative
             </Button>
           </form>
 

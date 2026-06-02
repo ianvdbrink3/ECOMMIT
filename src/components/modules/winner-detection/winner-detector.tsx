@@ -47,6 +47,7 @@ const verdictConfig = {
 
 export function WinnerDetector() {
   const [result, setResult] = useState<WinnerAnalysis | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -66,8 +67,11 @@ export function WinnerDetector() {
   })
 
   const onSubmit = (data: WinnerFormValues) => {
-    const analysis = detectWinner(data)
-    setResult(analysis)
+    setLoading(true)
+    setTimeout(() => {
+      setResult(detectWinner(data))
+      setLoading(false)
+    }, 250)
   }
 
   const radialData = result
@@ -159,9 +163,9 @@ export function WinnerDetector() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              <Trophy className="w-4 h-4 mr-2" />
-              Detect Winner
+            <Button type="submit" className="w-full" loading={loading}>
+              <Trophy className="w-4 h-4" />
+              Detecteer winner
             </Button>
           </form>
 
@@ -279,11 +283,11 @@ export function WinnerDetector() {
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
-          <div className="text-center">
-            <Trophy className="w-8 h-8 text-[#525252] mx-auto mb-2" />
-            <p className="text-[#525252] text-sm">Enter metrics to detect winners</p>
+        <div className="flex flex-col items-center justify-center min-h-[360px] rounded-xl border border-dashed border-[#1e1e1e] gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#141414] flex items-center justify-center">
+            <Trophy className="w-5 h-5 text-[#333333]" />
           </div>
+          <p className="text-[13px] text-[#444444]">Voer metrics in om winners te detecteren</p>
         </div>
       )}
     </div>

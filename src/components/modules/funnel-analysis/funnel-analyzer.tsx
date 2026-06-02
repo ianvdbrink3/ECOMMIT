@@ -51,6 +51,7 @@ const diagnosisConfig = {
 export function FunnelAnalyzer() {
   const [result, setResult] = useState<FunnelAnalysis | null>(null)
   const [formValues, setFormValues] = useState<FunnelFormValues | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -68,9 +69,13 @@ export function FunnelAnalyzer() {
   })
 
   const onSubmit = (data: FunnelFormValues) => {
-    const analysis = analyzeFunnel(data)
-    setResult(analysis)
-    setFormValues(data)
+    setLoading(true)
+    setTimeout(() => {
+      const analysis = analyzeFunnel(data)
+      setResult(analysis)
+      setFormValues(data)
+      setLoading(false)
+    }, 200)
   }
 
   const funnelData = formValues
@@ -115,8 +120,8 @@ export function FunnelAnalyzer() {
                 )}
               </div>
             ))}
-            <Button type="submit" className="w-full">
-              Analyze Funnel
+            <Button type="submit" className="w-full" loading={loading}>
+              Analyseer funnel
             </Button>
           </form>
 

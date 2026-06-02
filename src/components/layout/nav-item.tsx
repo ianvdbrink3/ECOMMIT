@@ -19,17 +19,26 @@ export function NavItem({ href, icon: Icon, label, collapsed }: NavItemProps) {
   return (
     <Link
       href={href}
-      className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
-        isActive
-          ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20'
-          : 'text-[#737373] hover:text-[#f5f5f5] hover:bg-[#1a1a1a]',
-        collapsed && 'justify-center px-2'
-      )}
       title={collapsed ? label : undefined}
+      className={cn(
+        'relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150',
+        isActive
+          ? 'bg-[#1a1a1a] text-[#efefef] font-medium'
+          : 'text-[#666666] hover:text-[#cccccc] hover:bg-[#141414] font-normal',
+        collapsed && 'justify-center px-0 w-10 mx-auto'
+      )}
     >
-      <Icon className={cn('shrink-0', isActive ? 'text-blue-400' : 'text-[#737373]')} size={18} />
-      {!collapsed && <span>{label}</span>}
+      {isActive && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-blue-500" />
+      )}
+      <Icon
+        size={16}
+        className={cn(
+          'shrink-0 transition-colors',
+          isActive ? 'text-blue-400' : 'text-[#555555]'
+        )}
+      />
+      {!collapsed && <span className="leading-none">{label}</span>}
     </Link>
   )
 }

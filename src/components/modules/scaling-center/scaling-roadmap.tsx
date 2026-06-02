@@ -33,6 +33,7 @@ const riskColors = {
 export function ScalingRoadmap() {
   const [result, setResult] = useState<ScalingRoadmapType | null>(null)
   const [initialBudget, setInitialBudget] = useState(0)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -48,12 +49,16 @@ export function ScalingRoadmap() {
   })
 
   const onSubmit = (data: ScalingFormValues) => {
-    const roadmap = generateScalingRoadmap({
-      currentDailyBudget: data.currentDailyBudget,
-      startDate: new Date(data.startDate),
-    })
-    setResult(roadmap)
-    setInitialBudget(data.currentDailyBudget)
+    setLoading(true)
+    setTimeout(() => {
+      const roadmap = generateScalingRoadmap({
+        currentDailyBudget: data.currentDailyBudget,
+        startDate: new Date(data.startDate),
+      })
+      setResult(roadmap)
+      setInitialBudget(data.currentDailyBudget)
+      setLoading(false)
+    }, 200)
   }
 
   const chartData = result
@@ -105,9 +110,9 @@ export function ScalingRoadmap() {
               )}
             </div>
 
-            <Button type="submit" className="w-full">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Generate Roadmap
+            <Button type="submit" className="w-full" loading={loading}>
+              <TrendingUp className="w-4 h-4" />
+              Genereer roadmap
             </Button>
           </form>
 

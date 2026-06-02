@@ -28,6 +28,7 @@ import {
 export function CashForecastForm() {
   const [result, setResult] = useState<CashForecastResult | null>(null)
   const [formValues, setFormValues] = useState<CashFormValues | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -45,9 +46,12 @@ export function CashForecastForm() {
   })
 
   const onSubmit = (data: CashFormValues) => {
-    const forecast = calculateCashForecast(data)
-    setResult(forecast)
-    setFormValues(data)
+    setLoading(true)
+    setTimeout(() => {
+      setResult(calculateCashForecast(data))
+      setFormValues(data)
+      setLoading(false)
+    }, 200)
   }
 
   // Generate burn curve data
@@ -136,9 +140,9 @@ export function CashForecastForm() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              <DollarSign className="w-4 h-4 mr-2" />
-              Generate Forecast
+            <Button type="submit" className="w-full" loading={loading}>
+              <DollarSign className="w-4 h-4" />
+              Genereer forecast
             </Button>
           </form>
         </CardContent>

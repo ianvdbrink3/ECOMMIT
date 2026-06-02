@@ -1,31 +1,56 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { Calculator } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { economicsSchema, type EconomicsFormValues } from '@/lib/validations/economics'
 import { calculateProductEconomics } from '@/domain/economics/calculator'
 import type { ProductEconomics } from '@/domain/economics/types'
 import { formatCurrency, formatPercent, cn } from '@/lib/utils'
-import { useState } from 'react'
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts'
 
-const COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6', '#22c55e', '#ec4899', '#14b8a6']
+const CHART_COLORS = ['#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#ec4899', '#14b8a6', '#22c55e']
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null
+  return <p className="text-[11px] text-red-400 mt-1">{message}</p>
+}
+
+function StatLine({
+  label,
+  value,
+  variant = 'neutral',
+}: {
+  label: string
+  value: string
+  variant?: 'neutral' | 'positive' | 'negative'
+}) {
+  return (
+    <div className="flex items-center justify-between py-2">
+      <span className="text-[13px] text-[#666666]">{label}</span>
+      <span
+        className={cn(
+          'text-[13px] font-medium tabular-nums',
+          variant === 'positive' && 'text-emerald-400',
+          variant === 'negative' && 'text-red-400',
+          variant === 'neutral' && 'text-[#cccccc]'
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}
 
 export function EconomicsCalculator() {
   const [result, setResult] = useState<ProductEconomics | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -46,140 +71,87 @@ export function EconomicsCalculator() {
   })
 
   const onSubmit = (data: EconomicsFormValues) => {
-    const economics = calculateProductEconomics(data as EconomicsFormValues)
-    setResult(economics)
+    setLoading(true)
+    setTimeout(() => {
+      setResult(calculateProductEconomics(data))
+      setLoading(false)
+    }, 200)
   }
 
   const chartData = result
     ? [
         { name: 'COGS', value: result.cogs },
-        { name: 'Shipping', value: result.shippingCost },
-        { name: 'VAT', value: result.vat },
-        { name: 'Payment Fees', value: result.paymentFees },
-        { name: 'Refund Reserve', value: result.refundReserve },
-        { name: 'Chargeback Reserve', value: result.chargebackReserve },
-        { name: 'Net Profit', value: Math.max(0, result.netProfit) },
+        { name: 'Verzending', value: result.shippingCost },
+        { name: 'BTW', value: result.vat },
+        { name: 'Betaalkosten', value: result.paymentFees },
+        { name: 'Refund reserve', value: result.refundReserve },
+        { name: 'Chargeback reserve', value: result.chargebackReserve },
+        { name: 'Netto winst', value: Math.max(0, result.netProfit) },
       ]
     : []
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      {/* Input Form */}
+    <div className="grid gap-5 lg:grid-cols-2">
+      {/* Form */}
       <Card>
         <CardHeader>
           <CardTitle>Product Economics</CardTitle>
-          <CardDescription>Enter your product cost structure to calculate true margins</CardDescription>
+          <CardDescription>
+            Voer de kostenstructuur in om je echte marge te berekenen
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="salePrice">Sale Price (€)</Label>
-              <Input
-                id="salePrice"
-                type="number"
-                step="0.01"
-                placeholder="49.99"
-                {...register('salePrice')}
-              />
-              {errors.salePrice && (
-                <p className="text-xs text-red-400">{errors.salePrice.message}</p>
-              )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-1.5">
+              <Label htmlFor="salePrice">Verkoopprijs (€)</Label>
+              <Input id="salePrice" type="number" step="0.01" placeholder="49.99" {...register('salePrice')} />
+              <FieldError message={errors.salePrice?.message} />
             </div>
 
             <Separator />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="productCost">Product Cost (€)</Label>
-                <Input
-                  id="productCost"
-                  type="number"
-                  step="0.01"
-                  placeholder="8.50"
-                  {...register('productCost')}
-                />
-                {errors.productCost && (
-                  <p className="text-xs text-red-400">{errors.productCost.message}</p>
-                )}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="productCost">Productkosten (€)</Label>
+                <Input id="productCost" type="number" step="0.01" placeholder="8.50" {...register('productCost')} />
+                <FieldError message={errors.productCost?.message} />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="shippingCost">Shipping Cost (€)</Label>
-                <Input
-                  id="shippingCost"
-                  type="number"
-                  step="0.01"
-                  placeholder="4.95"
-                  {...register('shippingCost')}
-                />
-                {errors.shippingCost && (
-                  <p className="text-xs text-red-400">{errors.shippingCost.message}</p>
-                )}
+              <div className="space-y-1.5">
+                <Label htmlFor="shippingCost">Verzendkosten (€)</Label>
+                <Input id="shippingCost" type="number" step="0.01" placeholder="4.95" {...register('shippingCost')} />
+                <FieldError message={errors.shippingCost?.message} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="vatPercentage">VAT (%)</Label>
-                <Input
-                  id="vatPercentage"
-                  type="number"
-                  step="0.1"
-                  placeholder="21"
-                  {...register('vatPercentage')}
-                />
-                {errors.vatPercentage && (
-                  <p className="text-xs text-red-400">{errors.vatPercentage.message}</p>
-                )}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="vatPercentage">BTW (%)</Label>
+                <Input id="vatPercentage" type="number" step="0.1" placeholder="21" {...register('vatPercentage')} />
+                <FieldError message={errors.vatPercentage?.message} />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="paymentFeePerc">Payment Fee (%)</Label>
-                <Input
-                  id="paymentFeePerc"
-                  type="number"
-                  step="0.1"
-                  placeholder="2.5"
-                  {...register('paymentFeePerc')}
-                />
-                {errors.paymentFeePerc && (
-                  <p className="text-xs text-red-400">{errors.paymentFeePerc.message}</p>
-                )}
+              <div className="space-y-1.5">
+                <Label htmlFor="paymentFeePerc">Betaalfee (%)</Label>
+                <Input id="paymentFeePerc" type="number" step="0.1" placeholder="2.5" {...register('paymentFeePerc')} />
+                <FieldError message={errors.paymentFeePerc?.message} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="refundPerc">Refund Rate (%)</Label>
-                <Input
-                  id="refundPerc"
-                  type="number"
-                  step="0.1"
-                  placeholder="3"
-                  {...register('refundPerc')}
-                />
-                {errors.refundPerc && (
-                  <p className="text-xs text-red-400">{errors.refundPerc.message}</p>
-                )}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="refundPerc">Refund rate (%)</Label>
+                <Input id="refundPerc" type="number" step="0.1" placeholder="3" {...register('refundPerc')} />
+                <FieldError message={errors.refundPerc?.message} />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="chargebackPerc">Chargeback Rate (%)</Label>
-                <Input
-                  id="chargebackPerc"
-                  type="number"
-                  step="0.1"
-                  placeholder="0.5"
-                  {...register('chargebackPerc')}
-                />
-                {errors.chargebackPerc && (
-                  <p className="text-xs text-red-400">{errors.chargebackPerc.message}</p>
-                )}
+              <div className="space-y-1.5">
+                <Label htmlFor="chargebackPerc">Chargeback rate (%)</Label>
+                <Input id="chargebackPerc" type="number" step="0.1" placeholder="0.5" {...register('chargebackPerc')} />
+                <FieldError message={errors.chargebackPerc?.message} />
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              Calculate Economics
+            <Button type="submit" className="w-full" loading={loading}>
+              <Calculator className="w-4 h-4" />
+              Bereken economics
             </Button>
           </form>
         </CardContent>
@@ -188,65 +160,59 @@ export function EconomicsCalculator() {
       {/* Results */}
       {result ? (
         <div className="space-y-4">
-          {/* Key Metrics */}
-          <div className="grid grid-cols-2 gap-4">
-            <Card className={cn(result.netProfit > 0 ? 'border-green-500/30' : 'border-red-500/30')}>
-              <CardContent className="p-4">
-                <p className="text-xs text-[#737373] mb-1">Net Profit per Sale</p>
-                <p className={cn(
-                  'text-2xl font-bold',
-                  result.netProfit > 0 ? 'text-green-400' : 'text-red-400'
-                )}>
-                  {formatCurrency(result.netProfit)}
-                </p>
-                <Badge variant={result.netProfit > 0 ? 'success' : 'danger'} className="mt-1 text-xs">
-                  {formatPercent(result.netMargin)} margin
-                </Badge>
-              </CardContent>
-            </Card>
+          {/* Hero metrics */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className={cn(
+              'rounded-xl border p-4',
+              result.netProfit > 0
+                ? 'border-emerald-500/20 bg-emerald-500/5'
+                : 'border-red-500/20 bg-red-500/5'
+            )}>
+              <p className="text-[11px] text-[#555555] uppercase tracking-wide mb-2">Netto winst</p>
+              <p className={cn(
+                'text-2xl font-bold tabular-nums',
+                result.netProfit > 0 ? 'text-emerald-400' : 'text-red-400'
+              )}>
+                {formatCurrency(result.netProfit)}
+              </p>
+              <p className={cn(
+                'text-[12px] mt-1',
+                result.netProfit > 0 ? 'text-emerald-500/70' : 'text-red-500/70'
+              )}>
+                {formatPercent(result.netMargin)} marge
+              </p>
+            </div>
 
-            <Card className={cn(result.breakEvenCpa > 0 ? 'border-blue-500/30' : 'border-[#262626]')}>
-              <CardContent className="p-4">
-                <p className="text-xs text-[#737373] mb-1">Break-Even CPA</p>
-                <p className="text-2xl font-bold text-blue-400">
-                  {result.breakEvenCpa > 0 ? formatCurrency(result.breakEvenCpa) : 'N/A'}
-                </p>
-                <p className="text-xs text-[#737373] mt-1">Max ad cost per conversion</p>
-              </CardContent>
-            </Card>
+            <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+              <p className="text-[11px] text-[#555555] uppercase tracking-wide mb-2">Break-even CPA</p>
+              <p className="text-2xl font-bold tabular-nums text-blue-400">
+                {result.breakEvenCpa > 0 ? formatCurrency(result.breakEvenCpa) : '—'}
+              </p>
+              <p className="text-[12px] text-blue-500/60 mt-1">Max ad cost per sale</p>
+            </div>
           </div>
 
-          {/* Cost Breakdown */}
+          {/* Cost breakdown */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Cost Breakdown</CardTitle>
+            <CardHeader>
+              <CardTitle>Kostenverdeling</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {[
-                { label: 'Revenue', value: result.revenue, positive: true },
-                { label: 'Product Cost (COGS)', value: -result.cogs },
-                { label: 'Shipping Cost', value: -result.shippingCost },
-                { label: 'VAT', value: -result.vat },
-                { label: 'Payment Fees', value: -result.paymentFees },
-                { label: 'Refund Reserve', value: -result.refundReserve },
-                { label: 'Chargeback Reserve', value: -result.chargebackReserve },
-              ].map(({ label, value, positive }) => (
-                <div key={label} className="flex items-center justify-between py-1">
-                  <span className="text-sm text-[#a3a3a3]">{label}</span>
-                  <span className={cn(
-                    'text-sm font-medium',
-                    positive ? 'text-[#f5f5f5]' : 'text-red-400'
-                  )}>
-                    {positive ? formatCurrency(value) : `- ${formatCurrency(Math.abs(value))}`}
-                  </span>
-                </div>
-              ))}
-              <Separator />
-              <div className="flex items-center justify-between py-1">
-                <span className="text-sm font-semibold text-[#f5f5f5]">Net Profit</span>
+            <CardContent>
+              <div className="divide-y divide-[#161616]">
+                <StatLine label="Omzet" value={formatCurrency(result.revenue)} variant="positive" />
+                <StatLine label="Productkosten (COGS)" value={`− ${formatCurrency(result.cogs)}`} variant="negative" />
+                <StatLine label="Verzendkosten" value={`− ${formatCurrency(result.shippingCost)}`} variant="negative" />
+                <StatLine label="BTW" value={`− ${formatCurrency(result.vat)}`} variant="negative" />
+                <StatLine label="Betaalkosten" value={`− ${formatCurrency(result.paymentFees)}`} variant="negative" />
+                <StatLine label="Refund reserve" value={`− ${formatCurrency(result.refundReserve)}`} variant="negative" />
+                <StatLine label="Chargeback reserve" value={`− ${formatCurrency(result.chargebackReserve)}`} variant="negative" />
+              </div>
+              <Separator className="my-3" />
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-semibold text-[#efefef]">Netto winst</span>
                 <span className={cn(
-                  'text-sm font-bold',
-                  result.netProfit > 0 ? 'text-green-400' : 'text-red-400'
+                  'text-[14px] font-bold tabular-nums',
+                  result.netProfit > 0 ? 'text-emerald-400' : 'text-red-400'
                 )}>
                   {formatCurrency(result.netProfit)}
                 </span>
@@ -254,52 +220,60 @@ export function EconomicsCalculator() {
             </CardContent>
           </Card>
 
-          {/* Pie Chart */}
+          {/* Pie chart */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Revenue Distribution</CardTitle>
+            <CardHeader>
+              <CardTitle>Omzetverdeling</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie
                     data={chartData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
+                    innerRadius={55}
+                    outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
+                    strokeWidth={0}
                   >
-                    {chartData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {chartData.map((_, i) => (
+                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#111111',
-                      border: '1px solid #262626',
+                      border: '1px solid #242424',
                       borderRadius: '8px',
-                      color: '#f5f5f5',
+                      color: '#efefef',
+                      fontSize: '12px',
                     }}
-                    formatter={(value) => [formatCurrency(value as number), '']}
-                  />
-                  <Legend
-                    formatter={(value) => (
-                      <span style={{ color: '#a3a3a3', fontSize: '12px' }}>{value}</span>
-                    )}
+                    formatter={(v) => [formatCurrency(v as number), '']}
                   />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-1 mt-2">
+                {chartData.map((item, i) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                    />
+                    <span className="text-[11px] text-[#555555] truncate">{item.name}</span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
-          <div className="text-center">
-            <p className="text-[#525252] text-sm">Fill in the form to see results</p>
-            <p className="text-[#525252] text-xs mt-1">Results will appear here</p>
+        <div className="flex flex-col items-center justify-center min-h-[360px] rounded-xl border border-dashed border-[#1e1e1e] gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#141414] flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-[#333333]" />
           </div>
+          <p className="text-[13px] text-[#444444]">Vul het formulier in om resultaten te zien</p>
         </div>
       )}
     </div>

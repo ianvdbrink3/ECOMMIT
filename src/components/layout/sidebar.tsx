@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
+import { UserButton } from '@clerk/nextjs'
 import { NavItem } from './nav-item'
 import { cn } from '@/lib/utils'
 
@@ -28,7 +29,6 @@ const navItems = [
   { href: '/winner-detection', icon: Trophy, label: 'Winner Detection' },
   { href: '/scaling-center', icon: TrendingUp, label: 'Scaling Center' },
   { href: '/cash-forecast', icon: DollarSign, label: 'Cash Forecast' },
-  { href: '/settings', icon: Settings, label: 'Settings' },
 ]
 
 export function Sidebar() {
@@ -37,28 +37,31 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col h-full bg-[#0d0d0d] border-r border-[#1a1a1a] transition-all duration-200',
-        collapsed ? 'w-16' : 'w-60'
+        'flex flex-col h-full bg-[#0a0a0a] border-r border-[#161616] transition-all duration-200 ease-in-out',
+        collapsed ? 'w-[56px]' : 'w-[220px]'
       )}
     >
       {/* Logo */}
-      <div className={cn(
-        'flex items-center gap-3 p-4 border-b border-[#1a1a1a]',
-        collapsed && 'justify-center px-2'
-      )}>
-        <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-sm">TVB</span>
+      <div
+        className={cn(
+          'flex items-center gap-2.5 px-4 h-14 border-b border-[#161616] shrink-0',
+          collapsed && 'justify-center px-0'
+        )}
+      >
+        <div className="shrink-0 w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
+          <span className="text-white font-bold text-[11px] tracking-tight">TVB</span>
         </div>
         {!collapsed && (
           <div className="min-w-0">
-            <p className="text-[#f5f5f5] font-semibold text-sm leading-tight">TVB Allocator</p>
-            <p className="text-[#525252] text-[10px] leading-tight truncate">Truin vdBrink Test Budget</p>
+            <p className="text-[#efefef] font-semibold text-[13px] leading-tight truncate">
+              TVB Allocator
+            </p>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
+      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
         {navItems.map((item) => (
           <NavItem
             key={item.href}
@@ -70,18 +73,50 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Collapse toggle */}
-      <div className="p-2 border-t border-[#1a1a1a]">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
+      {/* Bottom section */}
+      <div className="shrink-0 border-t border-[#161616] px-2 py-2 space-y-0.5">
+        <NavItem
+          href="/settings"
+          icon={Settings}
+          label="Settings"
+          collapsed={collapsed}
+        />
+
+        {/* User + collapse row */}
+        <div
           className={cn(
-            'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[#525252] hover:text-[#f5f5f5] hover:bg-[#1a1a1a] transition-colors text-sm',
-            collapsed && 'justify-center px-2'
+            'flex items-center gap-2 px-3 py-2',
+            collapsed && 'justify-center px-0'
           )}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          {!collapsed && <span>Collapse</span>}
-        </button>
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: 'w-6 h-6',
+                userButtonPopoverCard: 'bg-[#111111] border border-[#242424]',
+              },
+            }}
+          />
+          {!collapsed && (
+            <button
+              onClick={() => setCollapsed(true)}
+              className="ml-auto text-[#444444] hover:text-[#888888] transition-colors"
+              title="Collapse sidebar"
+            >
+              <ChevronLeft size={15} />
+            </button>
+          )}
+        </div>
+
+        {collapsed && (
+          <button
+            onClick={() => setCollapsed(false)}
+            className="w-10 mx-auto flex items-center justify-center py-1.5 text-[#444444] hover:text-[#888888] transition-colors"
+            title="Expand sidebar"
+          >
+            <ChevronRight size={15} />
+          </button>
+        )}
       </div>
     </aside>
   )

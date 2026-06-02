@@ -24,6 +24,7 @@ import {
 export function BudgetCalculator() {
   const [result, setResult] = useState<BudgetAllocation | null>(null)
   const [inputs, setInputs] = useState<BudgetFormValues | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -46,9 +47,12 @@ export function BudgetCalculator() {
     (watchedValues.creatives || 0) * (watchedValues.hooks || 0) * (watchedValues.angles || 0)
 
   const onSubmit = (data: BudgetFormValues) => {
-    const allocation = calculateBudgetAllocation(data)
-    setResult(allocation)
-    setInputs(data)
+    setLoading(true)
+    setTimeout(() => {
+      setResult(calculateBudgetAllocation(data))
+      setInputs(data)
+      setLoading(false)
+    }, 200)
   }
 
   const chartData = result
@@ -66,7 +70,7 @@ export function BudgetCalculator() {
         <CardHeader>
           <CardTitle>Budget Planner</CardTitle>
           <CardDescription>
-            Plan your test budget allocation across creatives, hooks, and angles
+            Verdeel testbudget over creatives × hooks × angles
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -137,8 +141,8 @@ export function BudgetCalculator() {
               </div>
             )}
 
-            <Button type="submit" className="w-full">
-              Calculate Allocation
+            <Button type="submit" className="w-full" loading={loading}>
+              Bereken allocatie
             </Button>
           </form>
         </CardContent>
@@ -238,10 +242,11 @@ export function BudgetCalculator() {
           </Card>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-full min-h-[400px] rounded-xl border border-[#1a1a1a] border-dashed">
-          <div className="text-center">
-            <p className="text-[#525252] text-sm">Enter your budget inputs to see allocation</p>
+        <div className="flex flex-col items-center justify-center min-h-[360px] rounded-xl border border-dashed border-[#1e1e1e] gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#141414] flex items-center justify-center">
+            <span className="text-[#333333] text-lg font-bold">€</span>
           </div>
+          <p className="text-[13px] text-[#444444]">Vul het formulier in om de allocatie te zien</p>
         </div>
       )}
     </div>

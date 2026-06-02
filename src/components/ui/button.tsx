@@ -4,21 +4,27 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-blue-600 text-white shadow hover:bg-blue-700',
-        destructive: 'bg-red-500 text-white shadow-sm hover:bg-red-600',
-        outline: 'border border-[#262626] bg-transparent text-[#f5f5f5] shadow-sm hover:bg-[#1f1f1f]',
-        secondary: 'bg-[#1f1f1f] text-[#f5f5f5] shadow-sm hover:bg-[#262626]',
-        ghost: 'hover:bg-[#1f1f1f] text-[#a3a3a3] hover:text-[#f5f5f5]',
-        link: 'text-blue-500 underline-offset-4 hover:underline',
+        default:
+          'bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-sm shadow-blue-900/20',
+        destructive:
+          'bg-red-600/90 text-white hover:bg-red-500 active:bg-red-700',
+        outline:
+          'border border-[#242424] bg-transparent text-[#efefef] hover:bg-[#141414] hover:border-[#333333] active:bg-[#1a1a1a]',
+        secondary:
+          'bg-[#1a1a1a] text-[#cccccc] hover:bg-[#222222] hover:text-[#efefef] active:bg-[#1a1a1a]',
+        ghost:
+          'bg-transparent text-[#888888] hover:bg-[#141414] hover:text-[#efefef]',
+        link:
+          'text-blue-400 underline-offset-4 hover:underline hover:text-blue-300 p-0 h-auto',
       },
       size: {
-        default: 'h-9 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-10 rounded-md px-8',
+        default: 'h-9 px-4',
+        sm: 'h-7 rounded-md px-3 text-xs',
+        lg: 'h-10 px-6',
         icon: 'h-9 w-9',
       },
     },
@@ -33,17 +39,47 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  loading?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, loading, children, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button'
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={disabled ?? loading}
         {...props}
-      />
+      >
+        {loading ? (
+          <>
+            <svg
+              className="animate-spin h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+            {children}
+          </>
+        ) : (
+          children
+        )}
+      </Comp>
     )
   }
 )
